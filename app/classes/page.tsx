@@ -1,20 +1,51 @@
-
 "use client";
 
 import { useState } from "react";
+import type { FormEvent } from "react";
+
+type ClassInfo = {
+  name: string;
+  courseNumber: string;
+  courseSection: string;
+  professorName: string;
+};
 
 export default function ClassesPage() {
   const [className, setClassName] = useState("");
-  const [classes, setClasses] = useState<string[]>([]);
+  const [courseNumber, setCourseNumber] = useState("");
+  const [courseSection, setCourseSection] = useState("");
+  const [professorName, setProfessorName] = useState("");
 
-  function addClass(event: React.FormEvent<HTMLFormElement>) {
+  const [classes, setClasses] = useState<ClassInfo[]>([]);
+
+  function addClass(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const name = className.trim();
-    if (!name) return;
 
-    setClasses([...classes, name]);
+    if (
+      !name ||
+      !courseNumber.trim() ||
+      !courseSection.trim() ||
+      !professorName.trim()
+    ) {
+      return;
+    }
+
+    setClasses([
+      ...classes,
+      {
+        name,
+        courseNumber: courseNumber.trim(),
+        courseSection: courseSection.trim(),
+        professorName: professorName.trim(),
+      },
+    ]);
+
     setClassName("");
+    setCourseNumber("");
+    setCourseSection("");
+    setProfessorName("");
   }
 
   return (
@@ -24,13 +55,41 @@ export default function ClassesPage() {
           Student Class Tracker
         </h1>
 
-        <form onSubmit={addClass} className="mb-6 flex gap-2">
+        <form onSubmit={addClass} className="mb-6 flex flex-col gap-3">
           <input
             type="text"
             placeholder="Enter class name"
             value={className}
             onChange={(event) => setClassName(event.target.value)}
-            className="flex-1 rounded border p-3"
+            className="w-full rounded border p-3"
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Enter course number"
+            value={courseNumber}
+            onChange={(event) => setCourseNumber(event.target.value)}
+            className="w-full rounded border p-3"
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Enter course section"
+            value={courseSection}
+            onChange={(event) => setCourseSection(event.target.value)}
+            className="w-full rounded border p-3"
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Enter professor name"
+            value={professorName}
+            onChange={(event) => setProfessorName(event.target.value)}
+            className="w-full rounded border p-3"
+            required
           />
 
           <button
@@ -41,12 +100,20 @@ export default function ClassesPage() {
           </button>
         </form>
 
-        <h2 className="mb-3 text-xl font-semibold">My Classes</h2>
+        <h2 className="mb-3 text-xl font-semibold">
+          My Classes
+        </h2>
 
         <ul className="space-y-2">
-          {classes.map((name, index) => (
-            <li key={index} className="rounded bg-white p-3 shadow">
-              {name}
+          {classes.map((course, index) => (
+            <li
+              key={index}
+              className="rounded bg-white p-3 shadow"
+            >
+              <p><strong>Class:</strong> {course.name}</p>
+              <p><strong>Course Number:</strong> {course.courseNumber}</p>
+              <p><strong>Section:</strong> {course.courseSection}</p>
+              <p><strong>Professor:</strong> {course.professorName}</p>
             </li>
           ))}
         </ul>
