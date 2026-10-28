@@ -49,9 +49,9 @@ export default function ClassesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8 text-black">
-      <div className="mx-auto max-w-xl">
-        <h1 className="mb-6 text-3xl font-bold">
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+      <div className="max-w-xl">
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           Student Class Tracker
         </h1>
 
@@ -61,7 +61,7 @@ export default function ClassesPage() {
             placeholder="Enter class name"
             value={className}
             onChange={(event) => setClassName(event.target.value)}
-            className="w-full rounded border p-3"
+            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
             required
           />
 
@@ -70,7 +70,7 @@ export default function ClassesPage() {
             placeholder="Enter course number"
             value={courseNumber}
             onChange={(event) => setCourseNumber(event.target.value)}
-            className="w-full rounded border p-3"
+            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
             required
           />
 
@@ -79,7 +79,7 @@ export default function ClassesPage() {
             placeholder="Enter course section"
             value={courseSection}
             onChange={(event) => setCourseSection(event.target.value)}
-            className="w-full rounded border p-3"
+            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
             required
           />
 
@@ -88,19 +88,19 @@ export default function ClassesPage() {
             placeholder="Enter professor name"
             value={professorName}
             onChange={(event) => setProfessorName(event.target.value)}
-            className="w-full rounded border p-3"
+            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
             required
           />
 
           <button
             type="submit"
-            className="rounded bg-blue-600 px-4 py-2 text-white"
+            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
           >
             Add Class
           </button>
         </form>
 
-        <h2 className="mb-3 text-xl font-semibold">
+        <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           My Classes
         </h2>
 
@@ -108,7 +108,7 @@ export default function ClassesPage() {
           {classes.map((course, index) => (
             <li
               key={index}
-              className="rounded bg-white p-3 shadow"
+              className="rounded-lg border border-zinc-200 bg-white p-4 text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50"
             >
               <p><strong>Class:</strong> {course.name}</p>
               <p><strong>Course Number:</strong> {course.courseNumber}</p>
