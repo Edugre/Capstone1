@@ -1,5 +1,6 @@
 import "server-only";
 import { cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { supabase } from "./supabase";
 
 export type Class = {
@@ -40,4 +41,52 @@ export async function getAssignments(): Promise<Assignment[]> {
 
   if (error) throw new Error(`Failed to load assignments: ${error.message}`);
   return data;
+}
+
+export type ClassSummary = Class & {
+  openCount: number;
+  /** Earliest due date (YYYY-MM-DD) among open assignments due today or later. */
+  nextDueDate: string | null;
+};
+
+async function getOpenAssignments(): Promise<
+  { class_id: number; due_date: string }[]
+> {
+  "use cache";
+  cacheTag("assignments");
+
+  const { data, error } = await supabase
+    .from("assignments")
+    .select("class_id, due_date")
+    .eq("is_completed", false);
+
+  if (error) throw new Error(`Failed to load assignments: ${error.message}`);
+  return data;
+}
+
+function todayISO(): string {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-${day}`;
+}
+
+export async function getClassSummaries(): Promise<ClassSummary[]> {
+  const [classes, open] = await Promise.all([
+    getClasses(),
+    getOpenAssignments(),
+  ]);
+
+  // "Today" must be read per request, not frozen into a cached result.
+  await connection();
+  const today = todayISO();
+
+  return classes.map((c) => {
+    const mine = open.filter((a) => a.class_id === c.class_id);
+    const upcoming = mine
+      .map((a) => a.due_date)
+      .filter((d) => d >= today)
+      .sort();
+    return { ...c, openCount: mine.length, nextDueDate: upcoming[0] ?? null };
+  });
 }
