@@ -5,12 +5,22 @@ import { getClassSummaries, type ClassSummary } from "@/lib/data";
 export default function DashboardPage() {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-        Dashboard
-      </h1>
-      <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-        Open work for each of your classes.
-      </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Dashboard
+          </h1>
+          <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+            Open work for each of your classes.
+          </p>
+        </div>
+        <Link
+          href="/classes"
+          className="self-start rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        >
+          Add class
+        </Link>
+      </div>
 
       <Suspense fallback={<ClassCardsSkeleton />}>
         <ClassCards />
