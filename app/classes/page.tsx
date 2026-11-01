@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import { useStoredList } from "@/lib/use-stored-list";
 
-type ClassInfo = {
+type Course = {
   name: string;
   courseNumber: string;
   courseSection: string;
   professorName: string;
+  meetingDaysTimes: string;
 };
 
 export default function ClassesPage() {
@@ -15,38 +16,36 @@ export default function ClassesPage() {
   const [courseNumber, setCourseNumber] = useState("");
   const [courseSection, setCourseSection] = useState("");
   const [professorName, setProfessorName] = useState("");
+  const [meetingDaysTimes, setMeetingDaysTimes] = useState("");
+  const [classes, setClasses] = useStoredList<Course>("classes");
 
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
+  function addClass(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!className.trim()) return;
 
-  function addClass(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    const newClass: Course = {
+      name: className.trim(),
+      courseNumber: courseNumber.trim(),
+      courseSection: courseSection.trim(),
+      professorName: professorName.trim(),
+      meetingDaysTimes: meetingDaysTimes.trim(),
+    };
 
-    const name = className.trim();
-
-    if (
-      !name ||
-      !courseNumber.trim() ||
-      !courseSection.trim() ||
-      !professorName.trim()
-    ) {
-      return;
-    }
-
-    setClasses([
-      ...classes,
-      {
-        name,
-        courseNumber: courseNumber.trim(),
-        courseSection: courseSection.trim(),
-        professorName: professorName.trim(),
-      },
-    ]);
-
+    setClasses((previous) => [...previous, newClass]);
     setClassName("");
     setCourseNumber("");
     setCourseSection("");
     setProfessorName("");
+    setMeetingDaysTimes("");
   }
+
+  const fields = [
+    { placeholder: "Enter class name", required: true, value: className, setter: setClassName },
+    { placeholder: "Enter course number", required: true, value: courseNumber, setter: setCourseNumber },
+    { placeholder: "Enter course section", required: true, value: courseSection, setter: setCourseSection },
+    { placeholder: "Enter professor name", required: true, value: professorName, setter: setProfessorName },
+    { placeholder: "Enter meeting days/times (e.g. Mon/Wed 10:00 AM)", required: false, value: meetingDaysTimes, setter: setMeetingDaysTimes },
+  ];
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
@@ -56,41 +55,17 @@ export default function ClassesPage() {
         </h1>
 
         <form onSubmit={addClass} className="mb-6 flex flex-col gap-3">
-          <input
-            type="text"
-            placeholder="Enter class name"
-            value={className}
-            onChange={(event) => setClassName(event.target.value)}
-            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Enter course number"
-            value={courseNumber}
-            onChange={(event) => setCourseNumber(event.target.value)}
-            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Enter course section"
-            value={courseSection}
-            onChange={(event) => setCourseSection(event.target.value)}
-            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Enter professor name"
-            value={professorName}
-            onChange={(event) => setProfessorName(event.target.value)}
-            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
-            required
-          />
+          {fields.map((field) => (
+            <input
+              key={field.placeholder}
+              type="text"
+              placeholder={field.placeholder}
+              value={field.value}
+              onChange={(e) => field.setter(e.target.value)}
+              className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
+              required={field.required}
+            />
+          ))}
 
           <button
             type="submit"
@@ -114,6 +89,7 @@ export default function ClassesPage() {
               <p><strong>Course Number:</strong> {course.courseNumber}</p>
               <p><strong>Section:</strong> {course.courseSection}</p>
               <p><strong>Professor:</strong> {course.professorName}</p>
+              <p><strong>Meeting Days/Times:</strong> {course.meetingDaysTimes}</p>
             </li>
           ))}
         </ul>
