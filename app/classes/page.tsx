@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import { useStoredList } from "@/lib/use-stored-list";
 
 type Course = {
   name: string;
@@ -16,24 +17,7 @@ export default function ClassesPage() {
   const [courseSection, setCourseSection] = useState("");
   const [professorName, setProfessorName] = useState("");
   const [meetingDaysTimes, setMeetingDaysTimes] = useState("");
-  const [classes, setClasses] = useState<Course[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem("classes") || "[]");
-      if (Array.isArray(saved)) setClasses(saved);
-    } catch {
-      setClasses([]);
-    }
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (loaded) {
-      localStorage.setItem("classes", JSON.stringify(classes));
-    }
-  }, [classes, loaded]);
+  const [classes, setClasses] = useStoredList<Course>("classes");
 
   function addClass(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

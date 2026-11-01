@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import { useStoredList } from "@/lib/use-stored-list";
 
 type Course = {
   name: string;
@@ -17,44 +18,11 @@ type Assignment = {
 };
 
 export default function AssignmentsPage() {
-  const [classes, setClasses] = useState<Course[]>([]);
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [classes] = useStoredList<Course>("classes");
+  const [assignments, setAssignments] = useStoredList<Assignment>("assignments");
   const [selectedClass, setSelectedClass] = useState("");
   const [name, setName] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    try {
-      const savedClasses = JSON.parse(
-        localStorage.getItem("classes") || "[]"
-      );
-      const savedAssignments = JSON.parse(
-        localStorage.getItem("assignments") || "[]"
-      );
-
-      if (Array.isArray(savedClasses)) {
-        setClasses(savedClasses);
-      }
-      if (Array.isArray(savedAssignments)) {
-        setAssignments(savedAssignments);
-      }
-    } catch {
-      setClasses([]);
-      setAssignments([]);
-    }
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (loaded) {
-      localStorage.setItem(
-        "assignments",
-        JSON.stringify(assignments)
-      );
-    }
-  }, [assignments, loaded]);
-
   function addAssignment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
