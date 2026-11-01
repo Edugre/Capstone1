@@ -72,9 +72,9 @@ export default function AssignmentsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-10 text-black">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="mb-10 text-3xl font-bold">
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+      <div className="max-w-3xl">
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           Student Assignment Tracker
         </h1>
 
@@ -82,7 +82,7 @@ export default function AssignmentsPage() {
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className="rounded border p-4"
+            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
             required
           >
             <option value="">Select a class</option>
@@ -98,7 +98,7 @@ export default function AssignmentsPage() {
           </select>
 
           {classes.length === 0 && (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
               No classes saved. Add a class on the Classes page first.
             </p>
           )}
@@ -108,7 +108,7 @@ export default function AssignmentsPage() {
             placeholder="Enter assignment name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded border p-4"
+            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
             required
           />
 
@@ -116,25 +116,25 @@ export default function AssignmentsPage() {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="rounded border p-4"
+            className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
             required
           />
 
           <button
             type="submit"
-            className="rounded bg-blue-600 px-4 py-3 text-white"
+            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
           >
             Add Assignment
           </button>
         </form>
 
-        <h2 className="mb-4 text-xl font-semibold">
+        <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           My Assignments
         </h2>
 
         <ul className="space-y-3">
           {assignments.map((assignment, index) => (
-            <li key={index} className="rounded bg-white p-4 shadow">
+            <li key={index} className="rounded-lg border border-zinc-200 bg-white p-4 text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50">
               <p><strong>Class:</strong> {assignment.className}</p>
               <p><strong>Assignment:</strong> {assignment.name}</p>
               <p><strong>Due Date:</strong> {assignment.dueDate}</p>
