@@ -38,6 +38,9 @@ export default function AssignmentsPage() {
     setName("");
     setDueDate("");
   }
+  const sortedAssignments = [...assignments].sort((a, b) =>
+  a.dueDate.localeCompare(b.dueDate)
+  );
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
@@ -101,7 +104,7 @@ export default function AssignmentsPage() {
         </h2>
 
         <ul className="space-y-3">
-          {assignments.map((assignment, index) => (
+          {sortedAssignments.map((assignment, index) => (
             <li key={index} className="rounded-lg border border-zinc-200 bg-white p-4 text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50">
               <p><strong>Class:</strong> {assignment.className}</p>
               <p><strong>Assignment:</strong> {assignment.name}</p>
