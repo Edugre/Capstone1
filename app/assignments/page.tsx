@@ -15,6 +15,7 @@ type Assignment = {
   name: string;
   dueDate: string;
   className: string;
+  completed?: boolean;
 };
 
 export default function AssignmentsPage() {
@@ -38,6 +39,17 @@ export default function AssignmentsPage() {
     setName("");
     setDueDate("");
   }
+function markComplete(assignmentToComplete: Assignment) {
+  setAssignments((previous) =>
+    previous.map((assignment) =>
+      assignment.name === assignmentToComplete.name &&
+      assignment.dueDate === assignmentToComplete.dueDate &&
+      assignment.className === assignmentToComplete.className
+        ? { ...assignment, completed: true }
+        : assignment
+    )
+  );
+}
   const sortedAssignments = [...assignments].sort((a, b) =>
   a.dueDate.localeCompare(b.dueDate)
   );
@@ -109,6 +121,11 @@ export default function AssignmentsPage() {
               <p><strong>Class:</strong> {assignment.className}</p>
               <p><strong>Assignment:</strong> {assignment.name}</p>
               <p><strong>Due Date:</strong> {assignment.dueDate}</p>
+              <button
+          onClick={() => markComplete(assignment)}
+          className="mt-3 rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
+          > {assignment.completed ? "Completed ✓" : "Mark Complete"}
+          </button>
             </li>
           ))}
         </ul>
