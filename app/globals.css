@@ -1,26 +1,79 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --canvas: #f6f6f3;
+  --surface: #ffffff;
+  --sunken: #ededea;
+  --line: #e4e4df;
+  --line-strong: #d6d6d0;
+  --divider: #efefea;
+  --ink: #17181c;
+  --ink-2: #3f4249;
+  --muted: #5b5e66;
+  --faint: #6b6f78;
+  --idle: #b9bab3;
+  --accent: #2f55d4;
+  --accent-hover: #1f3fa8;
+  --accent-soft: #eef2fd;
+  --on-accent: #ffffff;
+  --late: #9a3d0a;
+  --late-soft: #fdf1e9;
+  --late-line: #f4d3bd;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --canvas: #111214;
+    --surface: #1a1b1f;
+    --sunken: #26272c;
+    --line: #2c2d33;
+    --line-strong: #3a3b42;
+    --divider: #24252a;
+    --ink: #f2f2ef;
+    --ink-2: #d0d1cc;
+    --muted: #a3a5ad;
+    --faint: #8e9098;
+    --idle: #5c5e66;
+    --accent: #8aa2f5;
+    --accent-hover: #a9bbf8;
+    --accent-soft: #1e2745;
+    --on-accent: #0b1430;
+    --late: #f5a26b;
+    --late-soft: #2e1e14;
+    --late-line: #4a2d1a;
   }
 }
 
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-divider: var(--divider);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-idle: var(--idle);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-late: var(--late);
+  --color-late-soft: var(--late-soft);
+  --color-late-line: var(--late-line);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-manrope);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+input,
+select,
+textarea {
+  color-scheme: light dark;
 }

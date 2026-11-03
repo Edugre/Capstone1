@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import Link from "next/link";
-import NavLinks from "@/components/nav-links";
+import NavLinks, { MobileNavLinks } from "@/components/nav-links";
+import { CheckIcon } from "@/components/icons";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -23,24 +24,31 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-          <nav
-            aria-label="Main"
-            className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
-          >
-            <Link
-              href="/"
-              className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
-            >
-              Student Tracker
+      <body className="flex min-h-full flex-col bg-canvas font-sans text-[15px] text-ink">
+        <header className="border-b border-line bg-surface">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-3 sm:px-6">
+            <Link href="/" className="flex items-center gap-2.5">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-on-accent">
+                <CheckIcon className="size-4.5 stroke-[2.6]" />
+              </span>
+              <span className="font-display text-[17px] font-extrabold tracking-tight">
+                Student Tracker
+              </span>
             </Link>
-            <NavLinks />
-          </nav>
+            <nav aria-label="Main" className="hidden sm:block">
+              <NavLinks />
+            </nav>
+          </div>
         </header>
-        {children}
+        <div className="flex flex-1 flex-col pb-20 sm:pb-0">{children}</div>
+        <nav
+          aria-label="Main"
+          className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:hidden"
+        >
+          <MobileNavLinks />
+        </nav>
       </body>
     </html>
   );
