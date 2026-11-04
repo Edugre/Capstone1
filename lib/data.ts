@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { supabase } from "./supabase";
 import {
   addDays,
-  classColor,
+  classTint,
   todayISO,
   toPriority,
   type Priority,
@@ -28,7 +28,12 @@ type AssignmentRow = {
   is_completed: boolean;
 };
 
-type StepRow = { assignment_id: number; is_completed: boolean };
+type StepRow = {
+  task_id: number;
+  assignment_id: number;
+  title: string;
+  is_completed: boolean;
+};
 
 async function getClassRows(): Promise<ClassRow[]> {
   "use cache";
@@ -66,15 +71,20 @@ async function getStepRows(): Promise<StepRow[]> {
 
   const { data, error } = await supabase
     .from("tasks")
-    .select("assignment_id, is_completed")
-    .not("assignment_id", "is", null);
+    .select("task_id, assignment_id, title, is_completed")
+    .not("assignment_id", "is", null)
+    .order("due_date")
+    .order("task_id");
 
   if (error) throw new Error(`Failed to load tasks: ${error.message}`);
   return data;
 }
 
+export type Step = { task_id: number; title: string; is_completed: boolean };
+
 export type ClassItem = ClassRow & {
-  color: string;
+  bg: string;
+  fg: string;
   total: number;
   done: number;
   open: number;
@@ -87,15 +97,16 @@ export type AssignmentItem = Omit<AssignmentRow, "priority"> & {
   priority: Priority;
   class_name: string;
   class_code: string;
-  color: string;
-  stepsDone: number;
-  stepsTotal: number;
+  bg: string;
+  fg: string;
+  steps: Step[];
 };
 
 export type Tracker = {
   today: string;
   /** Last day of the 7-day "this week" window that starts today. */
   weekEnd: string;
+  hour: number;
   classes: ClassItem[];
   assignments: AssignmentItem[];
 };
@@ -110,31 +121,28 @@ export async function getTracker(): Promise<Tracker> {
   // "Today" must be read per request, not frozen into a cached result.
   await connection();
   const today = todayISO();
+  const hour = new Date().getHours();
 
   const classById = new Map(
-    classRows.map((c, index) => [c.class_id, { ...c, color: classColor(index) }]),
+    classRows.map((c, index) => [c.class_id, { ...c, ...classTint(index) }]),
   );
 
-  const steps = new Map<number, { done: number; total: number }>();
-  for (const step of stepRows) {
-    const count = steps.get(step.assignment_id) ?? { done: 0, total: 0 };
-    count.total += 1;
-    if (step.is_completed) count.done += 1;
-    steps.set(step.assignment_id, count);
+  const steps = new Map<number, Step[]>();
+  for (const { assignment_id, ...step } of stepRows) {
+    steps.set(assignment_id, [...(steps.get(assignment_id) ?? []), step]);
   }
 
   const assignments: AssignmentItem[] = assignmentRows.flatMap((a) => {
     const c = classById.get(a.class_id);
     if (!c) return [];
-    const s = steps.get(a.assignment_id);
     return {
       ...a,
       priority: toPriority(a.priority),
       class_name: c.class_name,
       class_code: c.class_code,
-      color: c.color,
-      stepsDone: s?.done ?? 0,
-      stepsTotal: s?.total ?? 0,
+      bg: c.bg,
+      fg: c.fg,
+      steps: steps.get(a.assignment_id) ?? [],
     };
   });
 
@@ -151,5 +159,5 @@ export async function getTracker(): Promise<Tracker> {
     };
   });
 
-  return { today, weekEnd: addDays(today, 6), classes, assignments };
+  return { today, weekEnd: addDays(today, 6), hour, classes, assignments };
 }

@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { Nunito } from "next/font/google";
 import Link from "next/link";
 import NavLinks, { MobileNavLinks } from "@/components/nav-links";
-import { CheckIcon } from "@/components/icons";
+import { MugIcon } from "@/components/icons";
+import ThemeToggle from "@/components/theme-toggle";
+import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+// Runs before first paint so a saved night mode doesn't flash light first.
+const themeScript = `(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}})()`;
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
@@ -24,31 +24,41 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
+      data-theme="light"
+      suppressHydrationWarning
+      className={`${nunito.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-canvas font-sans text-[15px] text-ink">
-        <header className="border-b border-line bg-surface">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-3 sm:px-6">
-            <Link href="/" className="flex items-center gap-2.5">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-on-accent">
-                <CheckIcon className="size-4.5 stroke-[2.6]" />
-              </span>
-              <span className="font-display text-[17px] font-extrabold tracking-tight">
-                Student Tracker
-              </span>
-            </Link>
-            <nav aria-label="Main" className="hidden sm:block">
-              <NavLinks />
-            </nav>
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col pb-20 sm:pb-0">{children}</div>
-        <nav
-          aria-label="Main"
-          className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:hidden"
-        >
-          <MobileNavLinks />
-        </nav>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="flex min-h-full flex-col bg-canvas font-sans text-base leading-relaxed text-ink">
+        <ToastProvider>
+          <header className="px-4 pt-4.5 sm:px-6">
+            <div className="mx-auto flex max-w-6xl items-center justify-between gap-6">
+              <Link href="/" className="flex items-center gap-3">
+                <span className="flex size-10.5 animate-bob items-center justify-center rounded-[14px] bg-accent text-on-accent">
+                  <MugIcon className="size-6" />
+                </span>
+                <span className="text-xl font-black tracking-tight">
+                  Student Tracker
+                </span>
+              </Link>
+              <div className="flex items-center gap-2.5">
+                <nav aria-label="Main" className="hidden sm:block">
+                  <NavLinks />
+                </nav>
+                <ThemeToggle />
+              </div>
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col pb-24 sm:pb-0">{children}</div>
+          <nav
+            aria-label="Main"
+            className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-[0_8px_20px_rgb(140_90_40/0.08)] sm:hidden"
+          >
+            <MobileNavLinks />
+          </nav>
+        </ToastProvider>
       </body>
     </html>
   );

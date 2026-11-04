@@ -5,12 +5,18 @@ import { useActionState } from "react";
 import { addAssignment, type FormState } from "@/lib/actions";
 import type { ClassItem } from "@/lib/data";
 import { PRIORITIES } from "@/lib/format";
-import { Field, FormMessage, SubmitButton, fieldClass } from "./form-fields";
+import {
+  Field,
+  FormMessage,
+  PillChoice,
+  SubmitButton,
+  fieldClass,
+} from "./form-fields";
 
 export default function AddAssignmentForm({
   classes,
 }: {
-  classes: Pick<ClassItem, "class_id" | "class_name" | "class_code">[];
+  classes: Pick<ClassItem, "class_id" | "class_code" | "bg" | "fg">[];
 }) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     addAssignment,
@@ -19,9 +25,9 @@ export default function AddAssignmentForm({
 
   if (classes.length === 0) {
     return (
-      <p className="text-sm text-muted">
+      <p className="text-ink-2">
         Add a class on the{" "}
-        <Link href="/classes" className="font-semibold text-accent">
+        <Link href="/classes" className="font-extrabold text-link">
           Classes page
         </Link>{" "}
         first.
@@ -30,8 +36,8 @@ export default function AddAssignmentForm({
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-3.5">
-      <Field label="Title">
+    <form action={formAction} className="flex flex-col gap-4">
+      <Field label="What is it?">
         <input
           name="title"
           type="text"
@@ -40,41 +46,38 @@ export default function AddAssignmentForm({
           className={fieldClass}
         />
       </Field>
-      <Field label="Class">
-        <select name="classId" required className={fieldClass}>
-          {classes.map((c) => (
-            <option key={c.class_id} value={c.class_id}>
-              {c.class_name} — {c.class_code}
-            </option>
-          ))}
-        </select>
-      </Field>
+      <PillChoice
+        legend="For which class?"
+        name="classId"
+        defaultValue={String(classes[0].class_id)}
+        options={classes.map((c) => ({
+          value: String(c.class_id),
+          label: c.class_code,
+          bg: c.bg,
+          fg: c.fg,
+        }))}
+      />
       <div className="flex flex-wrap gap-3">
-        <Field label="Due date" className="flex-[1_1_8rem]">
+        <Field label="Due date" className="flex-[1_1_9rem]">
           <input name="dueDate" type="date" required className={fieldClass} />
         </Field>
-        <Field label="Priority" className="flex-[1_1_7rem]">
-          <select name="priority" defaultValue="Medium" className={fieldClass}>
-            {PRIORITIES.map((p) => (
-              <option key={p}>{p}</option>
-            ))}
-          </select>
-        </Field>
+        <PillChoice
+          legend="How important?"
+          name="priority"
+          defaultValue="Medium"
+          options={PRIORITIES.map((p) => ({ value: p, label: p }))}
+          className="flex-[1_1_12rem]"
+        />
       </div>
-      <Field label="Notes" hint="(optional)">
+      <Field label="Notes" hint="Optional — chapters, links, reminders">
         <textarea
           name="description"
           rows={3}
-          placeholder="Chapters, page numbers, links…"
-          className={`${fieldClass} resize-y py-2.5`}
+          className={`${fieldClass} resize-y py-3`}
         />
       </Field>
-      <SubmitButton
-        pending={pending}
-        label="Add assignment"
-        pendingLabel="Adding…"
-      />
-      <FormMessage state={state} success="Assignment added." />
+      <SubmitButton pending={pending} label="Add to my list" pendingLabel="Adding…" />
+      <FormMessage state={state} success="Added! You'll find it in your list." />
     </form>
   );
 }

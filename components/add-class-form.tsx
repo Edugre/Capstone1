@@ -15,7 +15,7 @@ export default function AddClassForm({
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-3.5">
+    <form action={formAction} className="flex flex-col gap-4">
       <Field label="Class name">
         <input
           name="className"
@@ -34,7 +34,7 @@ export default function AddClassForm({
           className={fieldClass}
         />
       </Field>
-      <Field label="Instructor" hint="(optional)">
+      <Field label="Instructor" hint="Optional">
         <input
           name="instructor"
           type="text"
@@ -42,7 +42,7 @@ export default function AddClassForm({
           className={fieldClass}
         />
       </Field>
-      <Field label="Semester" hint="(optional)">
+      <Field label="Semester" hint="Optional">
         <input
           name="semester"
           type="text"
@@ -52,7 +52,7 @@ export default function AddClassForm({
         />
       </Field>
       <SubmitButton pending={pending} label="Add class" pendingLabel="Adding…" />
-      <FormMessage state={state} success="Class added." />
+      <FormMessage state={state} success="Class added! It gets its own color." />
     </form>
   );
 }

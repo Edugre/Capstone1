@@ -1,5 +1,3 @@
-// Inline stroke icons. Decorative by default; label the control that holds them.
-
 type IconProps = { className?: string };
 
 function Svg({
@@ -38,14 +36,6 @@ export function PlusIcon(props: IconProps) {
   );
 }
 
-export function StepsIcon(props: IconProps) {
-  return (
-    <Svg {...props}>
-      <path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" />
-    </Svg>
-  );
-}
-
 export function AlertIcon(props: IconProps) {
   return (
     <Svg {...props}>
@@ -55,13 +45,61 @@ export function AlertIcon(props: IconProps) {
   );
 }
 
-export function DashboardIcon(props: IconProps) {
+export function HomeIcon(props: IconProps) {
   return (
     <Svg {...props}>
-      <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
-      <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
-      <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
-      <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
+      <path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" />
+    </Svg>
+  );
+}
+
+export function MugIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 9h11v5a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5z" />
+      <path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16" />
+      <path d="M8.5 3.5c0 1 1 1.3 1 2.5M12 3.5c0 1 1 1.3 1 2.5" />
+    </Svg>
+  );
+}
+
+export function LeafIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 21c-4-3-7-6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4-3 7-7 10z" />
+    </Svg>
+  );
+}
+
+export function ChevronIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M9 6l6 6-6 6" />
+    </Svg>
+  );
+}
+
+export function MoonIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+    </Svg>
+  );
+}
+
+export function SunIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+    </Svg>
+  );
+}
+
+export function ArrowIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 12h14M13 6l6 6-6 6" />
     </Svg>
   );
 }

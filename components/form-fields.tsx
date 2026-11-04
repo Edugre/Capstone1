@@ -1,7 +1,7 @@
 import type { FormState } from "@/lib/actions";
 
 export const fieldClass =
-  "min-h-11 w-full rounded-lg border border-line-strong bg-surface px-3 text-[15px] font-normal text-ink placeholder:text-faint";
+  "min-h-12 w-full rounded-[14px] border-[1.5px] border-line-strong bg-soft px-3.5 text-base font-semibold text-ink placeholder:font-normal placeholder:text-muted focus:outline-3 focus:outline-offset-1 focus:outline-focus";
 
 export function Field({
   label,
@@ -16,13 +16,61 @@ export function Field({
 }) {
   return (
     <label
-      className={`flex flex-col gap-1.5 text-[13px] font-semibold text-ink-2 ${className}`}
+      className={`flex flex-col gap-1.5 text-sm font-extrabold text-ink-2 ${className}`}
     >
       <span>
-        {label} {hint && <span className="font-normal text-muted">{hint}</span>}
+        {label} {hint && <span className="font-semibold text-muted">{hint}</span>}
       </span>
       {children}
     </label>
+  );
+}
+
+// Real radio inputs styled as pills, so the choice submits with the form.
+export function PillChoice({
+  legend,
+  name,
+  options,
+  defaultValue,
+  className = "",
+}: {
+  legend: string;
+  name: string;
+  options: { value: string; label: string; bg?: string; fg?: string }[];
+  defaultValue?: string;
+  className?: string;
+}) {
+  return (
+    <fieldset className={className}>
+      <legend className="pb-2 text-sm font-extrabold text-ink-2">{legend}</legend>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => (
+          <label
+            key={o.value}
+            className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-full px-4 text-sm font-extrabold whitespace-nowrap transition-[background-color,color,transform] hover:scale-105 has-focus-visible:outline-3 has-focus-visible:outline-focus ${
+              o.bg
+                ? "bg-(--pill-bg) text-(--pill-fg) has-checked:bg-(--pill-fg) has-checked:text-canvas"
+                : "bg-warm-2 text-ink-2 has-checked:bg-ink has-checked:text-canvas"
+            }`}
+            style={
+              o.bg
+                ? ({ "--pill-bg": o.bg, "--pill-fg": o.fg } as React.CSSProperties)
+                : undefined
+            }
+          >
+            <input
+              type="radio"
+              name={name}
+              value={o.value}
+              defaultChecked={o.value === defaultValue}
+              required
+              className="sr-only"
+            />
+            {o.label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 
@@ -39,7 +87,7 @@ export function SubmitButton({
     <button
       type="submit"
       disabled={pending}
-      className="min-h-11 cursor-pointer rounded-lg bg-accent px-4 text-[15px] font-semibold text-on-accent hover:bg-accent-hover disabled:cursor-default disabled:opacity-70"
+      className="lift min-h-13 cursor-pointer rounded-full bg-accent px-5 text-base font-black text-on-accent disabled:cursor-default disabled:opacity-70"
     >
       {pending ? pendingLabel : label}
     </button>
@@ -55,14 +103,14 @@ export function FormMessage({
 }) {
   if (state.error) {
     return (
-      <p role="alert" className="text-sm font-medium text-late">
+      <p role="alert" className="text-sm font-bold text-late">
         {state.error}
       </p>
     );
   }
   if (state.ok) {
     return (
-      <p role="status" className="text-sm font-medium text-muted">
+      <p role="status" className="animate-fade text-sm font-bold text-done">
         {success}
       </p>
     );

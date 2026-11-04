@@ -1,6 +1,3 @@
-// Date and display helpers shared by server and client components.
-// Due dates are plain YYYY-MM-DD strings, so all math is done on those.
-
 export const PRIORITIES = ["Low", "Medium", "High"] as const;
 export type Priority = (typeof PRIORITIES)[number];
 
@@ -31,7 +28,7 @@ export function addDays(isoDate: string, days: number): string {
   return toISO(date);
 }
 
-export function daysBetween(from: string, to: string): number {
+function daysBetween(from: string, to: string): number {
   return Math.round((parse(to).getTime() - parse(from).getTime()) / 86_400_000);
 }
 
@@ -46,7 +43,6 @@ export function formatDate(
   return parse(isoDate).toLocaleDateString("en-US", options);
 }
 
-/** "Today", "3 days late", or "Thu, Nov 5". */
 export function formatDue(dueDate: string, today: string, completed = false) {
   const diff = daysBetween(today, dueDate);
   if (!completed && diff < 0) {
@@ -57,19 +53,20 @@ export function formatDue(dueDate: string, today: string, completed = false) {
   return formatDate(dueDate);
 }
 
-// One color per class, assigned in class order. Each differs in lightness
-// as well as hue so neighbors stay distinguishable.
-const CLASS_COLORS = [
-  "#4F46E5",
-  "#0F766E",
-  "#C2410C",
-  "#7E22CE",
-  "#0369A1",
-  "#A16207",
-  "#BE185D",
-  "#4D7C0F",
-];
+// Colors are CSS variables (app/globals.css) so they switch with night mode.
+const TINT_COUNT = 6;
 
-export function classColor(index: number) {
-  return CLASS_COLORS[index % CLASS_COLORS.length];
+export function classTint(index: number) {
+  const n = index % TINT_COUNT;
+  return { bg: `var(--tint-${n}-bg)`, fg: `var(--tint-${n}-fg)` };
+}
+
+export function greeting(hour: number) {
+  if (hour < 12) return "Good morning!";
+  if (hour < 18) return "Good afternoon!";
+  return "Good evening!";
+}
+
+export function plural(count: number, one: string, many = `${one}s`) {
+  return `${count} ${count === 1 ? one : many}`;
 }

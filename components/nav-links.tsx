@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookIcon, DashboardIcon, ListIcon } from "./icons";
+import { BookIcon, HomeIcon, ListIcon } from "./icons";
 
 const links = [
-  { href: "/", label: "Dashboard", Icon: DashboardIcon },
+  { href: "/", label: "Home", Icon: HomeIcon },
   { href: "/assignments", label: "Assignments", Icon: ListIcon },
   { href: "/classes", label: "Classes", Icon: BookIcon },
 ];
@@ -18,7 +18,7 @@ export default function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <ul className="flex gap-1">
+    <ul className="flex gap-1.5 rounded-full border border-line bg-surface p-1.5">
       {links.map(({ href, label }) => {
         const active = isActive(pathname, href);
         return (
@@ -26,10 +26,10 @@ export default function NavLinks() {
             <Link
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`block rounded-lg px-3.5 py-2.5 text-sm transition-colors ${
+              className={`block rounded-full px-4.5 py-2.5 text-[15px] transition-colors ${
                 active
-                  ? "bg-accent-soft font-semibold text-accent"
-                  : "font-medium text-ink-2 hover:bg-sunken hover:text-ink"
+                  ? "bg-accent-soft font-extrabold text-link-hover"
+                  : "font-bold text-ink-2 hover:bg-warm-2"
               }`}
             >
               {label}
@@ -41,7 +41,6 @@ export default function NavLinks() {
   );
 }
 
-// Bottom tab bar shown in place of the header links on phones.
 export function MobileNavLinks() {
   const pathname = usePathname();
 
@@ -54,8 +53,10 @@ export function MobileNavLinks() {
             <Link
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-13 flex-col items-center justify-center gap-0.5 rounded-lg text-xs ${
-                active ? "font-semibold text-accent" : "font-medium text-muted"
+              className={`flex min-h-13 flex-col items-center justify-center gap-px rounded-[18px] text-xs transition-colors ${
+                active
+                  ? "bg-accent-soft font-extrabold text-link-hover"
+                  : "font-bold text-ink-2"
               }`}
             >
               <Icon className="size-5.5" />
