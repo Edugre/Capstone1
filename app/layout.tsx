@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito } from "next/font/google";
 import Link from "next/link";
-import NavLinks from "@/components/nav-links";
+import NavLinks, { MobileNavLinks } from "@/components/nav-links";
+import { MugIcon } from "@/components/icons";
+import ThemeToggle from "@/components/theme-toggle";
+import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// Runs before first paint so a saved night mode doesn't flash light first.
+const themeScript = `(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}})()`;
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
@@ -23,24 +24,41 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      data-theme="light"
+      suppressHydrationWarning
+      className={`${nunito.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="flex min-h-full flex-col bg-canvas font-sans text-base leading-relaxed text-ink">
+        <ToastProvider>
+          <header className="px-4 pt-4.5 sm:px-6">
+            <div className="mx-auto flex max-w-6xl items-center justify-between gap-6">
+              <Link href="/" className="flex items-center gap-3">
+                <span className="flex size-10.5 animate-bob items-center justify-center rounded-[14px] bg-accent text-on-accent">
+                  <MugIcon className="size-6" />
+                </span>
+                <span className="text-xl font-black tracking-tight">
+                  Student Tracker
+                </span>
+              </Link>
+              <div className="flex items-center gap-2.5">
+                <nav aria-label="Main" className="hidden sm:block">
+                  <NavLinks />
+                </nav>
+                <ThemeToggle />
+              </div>
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col pb-24 sm:pb-0">{children}</div>
           <nav
             aria-label="Main"
-            className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+            className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-[0_8px_20px_rgb(140_90_40/0.08)] sm:hidden"
           >
-            <Link
-              href="/"
-              className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
-            >
-              Student Tracker
-            </Link>
-            <NavLinks />
+            <MobileNavLinks />
           </nav>
-        </header>
-        {children}
+        </ToastProvider>
       </body>
     </html>
   );

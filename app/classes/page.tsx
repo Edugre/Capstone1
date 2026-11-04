@@ -1,99 +1,151 @@
-"use client";
-
-import { useState, type FormEvent } from "react";
-import { useStoredList } from "@/lib/use-stored-list";
-
-type Course = {
-  name: string;
-  courseNumber: string;
-  courseSection: string;
-  professorName: string;
-  meetingDaysTimes: string;
-};
+import Link from "next/link";
+import { Suspense } from "react";
+import AddClassForm from "@/components/add-class-form";
+import { AlertIcon, ArrowIcon, BookIcon } from "@/components/icons";
+import ProgressRing from "@/components/progress-ring";
+import { getTracker, type ClassItem } from "@/lib/data";
+import { formatDue, plural } from "@/lib/format";
 
 export default function ClassesPage() {
-  const [className, setClassName] = useState("");
-  const [courseNumber, setCourseNumber] = useState("");
-  const [courseSection, setCourseSection] = useState("");
-  const [professorName, setProfessorName] = useState("");
-  const [meetingDaysTimes, setMeetingDaysTimes] = useState("");
-  const [classes, setClasses] = useStoredList<Course>("classes");
+  return (
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5.5 px-4 pt-7 pb-18 sm:px-6">
+      <Suspense fallback={<ClassesSkeleton />}>
+        <Classes />
+      </Suspense>
+    </main>
+  );
+}
 
-  function addClass(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!className.trim()) return;
+async function Classes() {
+  const { today, classes, assignments } = await getTracker();
 
-    const newClass: Course = {
-      name: className.trim(),
-      courseNumber: courseNumber.trim(),
-      courseSection: courseSection.trim(),
-      professorName: professorName.trim(),
-      meetingDaysTimes: meetingDaysTimes.trim(),
-    };
-
-    setClasses((previous) => [...previous, newClass]);
-    setClassName("");
-    setCourseNumber("");
-    setCourseSection("");
-    setProfessorName("");
-    setMeetingDaysTimes("");
-  }
-
-  const fields = [
-    { placeholder: "Enter class name", required: true, value: className, setter: setClassName },
-    { placeholder: "Enter course number", required: true, value: courseNumber, setter: setCourseNumber },
-    { placeholder: "Enter course section", required: true, value: courseSection, setter: setCourseSection },
-    { placeholder: "Enter professor name", required: true, value: professorName, setter: setProfessorName },
-    { placeholder: "Enter meeting days/times (e.g. Mon/Wed 10:00 AM)", required: false, value: meetingDaysTimes, setter: setMeetingDaysTimes },
+  const semesters = [
+    ...new Set(classes.map((c) => c.semester).filter((s): s is string => !!s)),
   ];
+  const done = assignments.filter((a) => a.is_completed).length;
+  const summary = [
+    ...semesters,
+    plural(classes.length, "class", "classes"),
+    `${done} of ${assignments.length} assignments done so far`,
+  ].join(" · ");
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
-      <div className="max-w-xl">
-        <h1 className="mb-6 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Student Class Tracker
+    <>
+      <div className="flex animate-rise flex-col gap-1.5">
+        <h1 className="text-[40px] leading-tight font-black tracking-tight">
+          Your classes
         </h1>
-
-        <form onSubmit={addClass} className="mb-6 flex flex-col gap-3">
-          {fields.map((field) => (
-            <input
-              key={field.placeholder}
-              type="text"
-              placeholder={field.placeholder}
-              value={field.value}
-              onChange={(e) => field.setter(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 bg-white p-3 text-zinc-900 placeholder:text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-400 dark:[color-scheme:dark]"
-              required={field.required}
-            />
-          ))}
-
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-          >
-            Add Class
-          </button>
-        </form>
-
-        <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          My Classes
-        </h2>
-
-        <ul className="space-y-2">
-          {classes.map((course, index) => (
-            <li
-              key={index}
-              className="rounded-lg border border-zinc-200 bg-white p-4 text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50"
-            >
-              <p><strong>Class:</strong> {course.name}</p>
-              <p><strong>Course Number:</strong> {course.courseNumber}</p>
-              <p><strong>Section:</strong> {course.courseSection}</p>
-              <p><strong>Professor:</strong> {course.professorName}</p>
-              <p><strong>Meeting Days/Times:</strong> {course.meetingDaysTimes}</p>
-            </li>
-          ))}
-        </ul>
+        <p className="text-[17px] text-ink-2">{summary}</p>
       </div>
-    </main>
+
+      <div className="flex flex-wrap items-start gap-6">
+        <section aria-label="Classes" className="min-w-0 flex-[999_1_37rem]">
+          {classes.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-line-strong bg-surface p-8 text-center">
+              <p className="font-extrabold">No classes yet</p>
+              <p className="mt-1 text-ink-2">Add your first class with the form.</p>
+            </div>
+          ) : (
+            <ul className="flex flex-wrap gap-4.5">
+              {classes.map((c, i) => (
+                <ClassCard key={c.class_id} c={c} today={today} index={i} />
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <aside
+          aria-labelledby="add-class"
+          className="min-w-0 flex-[1_1_20rem] animate-rise rounded-[26px] border border-line bg-surface p-6 [animation-delay:200ms]"
+        >
+          <div className="mb-4 flex items-center gap-3">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-link-hover">
+              <BookIcon className="size-5" />
+            </span>
+            <h2 id="add-class" className="text-[22px] font-black">
+              Add a class
+            </h2>
+          </div>
+          <AddClassForm defaultSemester={semesters.at(-1)} />
+        </aside>
+      </div>
+    </>
+  );
+}
+
+function ClassCard({
+  c,
+  today,
+  index,
+}: {
+  c: ClassItem;
+  today: string;
+  index: number;
+}) {
+  return (
+    <li
+      className="lift flex min-w-0 flex-[1_1_20rem] animate-rise flex-col gap-4 rounded-[26px] px-5.5 pt-5.5 pb-5"
+      style={{ backgroundColor: c.bg, animationDelay: `${80 + index * 90}ms` }}
+    >
+      <div className="flex items-start justify-between gap-3.5">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span
+            className="self-start rounded-full bg-surface px-3 py-0.5 text-[13px] font-black"
+            style={{ color: c.fg }}
+          >
+            {c.class_code}
+          </span>
+          <h2 className="mt-2 text-[22px] leading-tight font-black">{c.class_name}</h2>
+          {c.instructor && (
+            <span className="text-[15px] font-bold text-ink-2">{c.instructor}</span>
+          )}
+        </div>
+        <ProgressRing done={c.done} total={c.total} size={72} color={c.fg}>
+          <span className="text-[15px] font-black">
+            {c.done}/{c.total}
+          </span>
+        </ProgressRing>
+      </div>
+
+      <dl className="grid grid-cols-2 gap-2.5">
+        <div className="flex flex-col rounded-2xl bg-surface/80 px-3.5 py-2.5">
+          <dt className="text-[13px] font-bold text-ink-2">Still to do</dt>
+          <dd className="text-2xl leading-tight font-black">{c.open}</dd>
+        </div>
+        <div className="flex flex-col rounded-2xl bg-surface/80 px-3.5 py-2.5">
+          <dt className="text-[13px] font-bold text-ink-2">Next up</dt>
+          <dd className="text-[17px] leading-relaxed font-black">
+            {c.nextDueDate ? formatDue(c.nextDueDate, today) : "Nothing due"}
+          </dd>
+        </div>
+      </dl>
+
+      {c.overdue > 0 && (
+        <p className="flex items-center gap-2 rounded-2xl bg-surface px-3.5 py-2.5 text-sm font-extrabold text-late">
+          <AlertIcon className="size-4 stroke-[2.4]" />
+          {plural(c.overdue, "assignment")} to catch up on
+        </p>
+      )}
+
+      <Link
+        href="/assignments"
+        className="mt-auto flex min-h-12 items-center justify-center gap-1.5 rounded-full bg-surface text-[15px] font-extrabold text-ink"
+      >
+        See assignments
+        <ArrowIcon className="size-4 stroke-[2.6]" />
+      </Link>
+    </li>
+  );
+}
+
+function ClassesSkeleton() {
+  return (
+    <div aria-busy="true" aria-label="Loading classes" className="flex flex-col gap-6">
+      <div className="h-20 w-80 animate-pulse rounded-2xl bg-warm-2" />
+      <div className="flex flex-wrap gap-6">
+        <div className="h-[28rem] flex-[999_1_37rem] animate-pulse rounded-3xl bg-warm-2" />
+        <div className="h-[28rem] flex-[1_1_20rem] animate-pulse rounded-3xl bg-warm-2" />
+      </div>
+    </div>
   );
 }
