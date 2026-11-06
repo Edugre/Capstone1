@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useOptimistic } from "react";
-import { setAssignmentCompleted } from "@/lib/actions";
+import { setAssignmentCompleted, setStepCompleted } from "@/lib/actions";
 import type { AssignmentItem } from "@/lib/data";
 import { formatDue } from "@/lib/format";
 import { CheckIcon, ChevronIcon } from "./icons";
@@ -37,6 +37,16 @@ export default function AssignmentRow({
       }
     });
   }
+  function toggleStep(taskId: number, isCompleted: boolean) {
+  startTransition(async () => {
+    const result = await setStepCompleted(taskId, !isCompleted);
+
+    if (result.error) {
+      console.error(result.error);
+      toast("Could not update the step.");
+    }
+  });
+}
 
   const late = !completed && a.due_date < today;
   const dueToday = !completed && a.due_date === today;
@@ -121,6 +131,14 @@ export default function AssignmentRow({
                     key={step.task_id}
                     className={`flex items-center gap-2 text-sm font-bold ${step.is_completed ? "text-muted" : ""}`}
                   >
+                    <button
+                      type="button"
+                      onClick={() => toggleStep(step.task_id, step.is_completed)}
+                      aria-pressed={step.is_completed}
+                      aria-label={`Mark ${step.title} ${step.is_completed ? "not done" : "done"}`}
+                      aria-disabled={completed}
+                      className="flex size-4 flex-none cursor-pointer items-center justify-center rounded-md"
+                      >
                     {step.is_completed ? (
                       <span className="flex size-4 items-center justify-center rounded-md bg-check text-white">
                         <CheckIcon className="size-3 stroke-[3.5]" />
@@ -129,6 +147,7 @@ export default function AssignmentRow({
                       <span className="size-4 rounded-md border-2 border-idle bg-surface" />
                     )}
                     {step.title}
+                    </button>
                   </li>
                 ))}
               </ul>
