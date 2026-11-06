@@ -74,3 +74,20 @@ export async function setAssignmentCompleted(
   updateTag("assignments");
   return { ok: true };
 }
+
+export async function setStepCompleted(
+  taskId: number,
+  completed: boolean
+): Promise<FormState> {
+  const { error } = await supabase
+    .from("tasks")
+    .update({ is_completed: completed })
+    .eq("task_id", taskId);
+
+  if (error) return { error: error.message };
+
+  updateTag("tasks");
+  updateTag("assignments");
+
+  return { ok: true };
+}
