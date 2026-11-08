@@ -123,7 +123,7 @@ export default function AssignmentRow({
             type="button"
             onClick={() => setEditing(true)}
             aria-label={`Edit ${a.title}`}
-            title="Edit"
+            title="Edit or delete"
             className="-mr-2 flex size-10 flex-none cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-warm-2 hover:text-ink focus-visible:outline-3 focus-visible:outline-focus"
           >
             <PencilIcon className="size-4.5 stroke-[2.2]" />
