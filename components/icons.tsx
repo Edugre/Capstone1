@@ -121,3 +121,19 @@ export function BookIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function PencilIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M15.5 5.5l3 3M4 20l1-4.5L16 4.5a2.1 2.1 0 0 1 3 3L8 18.5z" />
+    </Svg>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </Svg>
+  );
+}
