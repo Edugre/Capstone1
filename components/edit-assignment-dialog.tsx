@@ -1,15 +1,28 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useRef } from "react";
-import { updateAssignment, type FormState } from "@/lib/actions";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import { flushSync } from "react-dom";
+import { deleteAssignment, updateAssignment, type FormState } from "@/lib/actions";
 import type { AssignmentItem, ClassOption } from "@/lib/data";
+import { plural } from "@/lib/format";
 import AssignmentFields from "./assignment-fields";
 import { FormMessage, SubmitButton } from "./form-fields";
-import { CloseIcon, PencilIcon } from "./icons";
+import { CloseIcon, PencilIcon, TrashIcon } from "./icons";
 import { useToast } from "./toast";
 
+const secondaryButton =
+  "lift min-h-13 flex-[1_1_8rem] cursor-pointer rounded-full bg-surface px-5 text-base font-extrabold text-ink ring-1 ring-line-strong ring-inset disabled:cursor-default disabled:opacity-70";
+
 // Mounted only while editing; opens as a native modal so focus, Esc, and the
-// backdrop are handled by the browser.
+// backdrop are handled by the browser. Delete lives here too, behind a
+// confirmation step, so it's hard to hit by accident.
 export default function EditAssignmentDialog({
   assignment: a,
   classes,
@@ -22,6 +35,11 @@ export default function EditAssignmentDialog({
   const toast = useToast();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const pressedBackdrop = useRef(false);
+  const deleteButtonRef = useRef<HTMLButtonElement>(null);
+  const keepButtonRef = useRef<HTMLButtonElement>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [deleteError, setDeleteError] = useState<string>();
+  const [deleting, startDelete] = useTransition();
 
   // close() hands focus back to the Edit button; unmounting right away (not
   // on the async "close" event) means a quick re-open always gets a fresh
@@ -42,6 +60,30 @@ export default function EditAssignmentDialog({
     },
     {},
   );
+
+  // Move focus with the view so keyboard users land on the safe choice.
+  function askToDelete() {
+    flushSync(() => setConfirming(true));
+    keepButtonRef.current?.focus();
+  }
+  function keepIt() {
+    flushSync(() => {
+      setConfirming(false);
+      setDeleteError(undefined);
+    });
+    deleteButtonRef.current?.focus();
+  }
+  function confirmDelete() {
+    startDelete(async () => {
+      const result = await deleteAssignment(a.assignment_id);
+      if (result.error) {
+        setDeleteError(result.error);
+        return;
+      }
+      close();
+      toast(`Deleted ${a.title}.`);
+    });
+  }
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -72,11 +114,19 @@ export default function EditAssignmentDialog({
     >
       <div className="p-6">
         <div className="mb-4 flex items-center gap-3">
-          <span className="flex size-10 flex-none items-center justify-center rounded-xl bg-accent-soft text-link-hover">
-            <PencilIcon className="size-5 stroke-[2.2]" />
+          <span
+            className={`flex size-10 flex-none items-center justify-center rounded-xl ${
+              confirming ? "bg-late-soft text-late" : "bg-accent-soft text-link-hover"
+            }`}
+          >
+            {confirming ? (
+              <TrashIcon className="size-5 stroke-[2.2]" />
+            ) : (
+              <PencilIcon className="size-5 stroke-[2.2]" />
+            )}
           </span>
           <h2 id={`edit-${a.assignment_id}`} className="flex-1 text-[22px] font-black">
-            Edit assignment
+            {confirming ? "Delete assignment?" : "Edit assignment"}
           </h2>
           <button
             type="button"
@@ -89,14 +139,16 @@ export default function EditAssignmentDialog({
         </div>
 
         {/* Submitted by hand rather than via the action prop so React doesn't
-            reset the fields — a failed save keeps what you typed. */}
+            reset the fields — a failed save keeps what you typed. It stays
+            mounted (just hidden) while confirming a delete, so "Keep it"
+            brings back any edits. */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
             startTransition(() => formAction(formData));
           }}
-          className="flex flex-col gap-4"
+          className={`${confirming ? "hidden" : "flex"} flex-col gap-4`}
         >
           <input type="hidden" name="assignmentId" value={a.assignment_id} />
           <AssignmentFields classes={classes} defaults={a} />
@@ -105,7 +157,7 @@ export default function EditAssignmentDialog({
             <button
               type="button"
               onClick={close}
-              className="lift min-h-13 flex-[1_1_8rem] cursor-pointer rounded-full bg-surface px-5 text-base font-extrabold text-ink ring-1 ring-line-strong ring-inset"
+              className={secondaryButton}
             >
               Cancel
             </button>
@@ -116,7 +168,52 @@ export default function EditAssignmentDialog({
               className="flex-[2_1_10rem]"
             />
           </div>
+          <div className="border-t border-line pt-2">
+            <button
+              ref={deleteButtonRef}
+              type="button"
+              onClick={askToDelete}
+              className="-ml-3 flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-3 text-sm font-extrabold text-late transition-colors hover:bg-late-soft"
+            >
+              <TrashIcon className="size-4.5 stroke-[2.2]" />
+              Delete assignment
+            </button>
+          </div>
         </form>
+
+        {confirming && (
+          <div className="flex animate-fade flex-col gap-4">
+            <p className="text-[17px] text-ink-2">
+              <span className="font-extrabold text-ink">{a.title}</span>
+              {a.steps.length > 0 && ` and its ${plural(a.steps.length, "step")}`} will
+              be removed for good. This can&apos;t be undone.
+            </p>
+            {deleteError && (
+              <p role="alert" className="text-sm font-bold text-late">
+                {deleteError}
+              </p>
+            )}
+            <div className="flex flex-wrap-reverse gap-2.5">
+              <button
+                ref={keepButtonRef}
+                type="button"
+                onClick={keepIt}
+                disabled={deleting}
+                className={secondaryButton}
+              >
+                Keep it
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="lift min-h-13 flex-[2_1_10rem] cursor-pointer rounded-full bg-late px-5 text-base font-black text-canvas disabled:cursor-default disabled:opacity-70"
+              >
+                {deleting ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </dialog>
   );

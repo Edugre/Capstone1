@@ -140,6 +140,36 @@ export async function updateAssignment(
   return { ok: true };
 }
 
+export async function deleteAssignment(assignmentId: number): Promise<FormState> {
+  if (!isId(assignmentId)) return { error: "Missing assignment." };
+
+  // Steps reference the assignment, so they go first.
+  const { data: steps, error: stepError } = await supabase
+    .from("tasks")
+    .delete()
+    .eq("assignment_id", assignmentId)
+    .select("assignment_id, class_id, title, description, due_date, priority, is_completed");
+  if (stepError) return { error: stepError.message };
+
+  const { data, error } = await supabase
+    .from("assignments")
+    .delete()
+    .eq("assignment_id", assignmentId)
+    .select("assignment_id");
+  if (error || data.length === 0) {
+    // Put the steps back so a failed delete doesn't lose them.
+    if (steps.length > 0) await supabase.from("tasks").insert(steps);
+    updateTag("tasks");
+    return {
+      error: error?.message ?? "This assignment no longer exists. Try refreshing.",
+    };
+  }
+
+  updateTag("tasks");
+  updateTag("assignments");
+  return { ok: true };
+}
+
 export async function setAssignmentCompleted(
   assignmentId: number,
   completed: boolean,
