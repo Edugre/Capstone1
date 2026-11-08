@@ -93,6 +93,9 @@ export type ClassItem = ClassRow & {
   nextDueDate: string | null;
 };
 
+/** What a form needs to offer a class as a choice. */
+export type ClassOption = Pick<ClassItem, "class_id" | "class_code" | "bg" | "fg">;
+
 export type AssignmentItem = Omit<AssignmentRow, "priority"> & {
   priority: Priority;
   class_name: string;

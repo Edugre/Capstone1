@@ -78,16 +78,18 @@ export function SubmitButton({
   pending,
   label,
   pendingLabel,
+  className = "",
 }: {
   pending: boolean;
   label: string;
   pendingLabel: string;
+  className?: string;
 }) {
   return (
     <button
       type="submit"
       disabled={pending}
-      className="lift min-h-13 cursor-pointer rounded-full bg-accent px-5 text-base font-black text-on-accent disabled:cursor-default disabled:opacity-70"
+      className={`lift min-h-13 cursor-pointer rounded-full bg-accent px-5 text-base font-black text-on-accent disabled:cursor-default disabled:opacity-70 ${className}`}
     >
       {pending ? pendingLabel : label}
     </button>

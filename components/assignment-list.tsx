@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { AssignmentItem, ClassItem } from "@/lib/data";
+import type { AssignmentItem, ClassOption } from "@/lib/data";
 import { addDays, formatDate } from "@/lib/format";
 import AssignmentRow from "./assignment-row";
 import { LeafIcon } from "./icons";
@@ -22,7 +22,7 @@ export default function AssignmentList({
   weekEnd,
 }: {
   assignments: AssignmentItem[];
-  classes: Pick<ClassItem, "class_id" | "class_code" | "bg" | "fg">[];
+  classes: ClassOption[];
   today: string;
   weekEnd: string;
 }) {
@@ -171,6 +171,7 @@ export default function AssignmentList({
                 <AssignmentRow
                   key={a.assignment_id}
                   assignment={a}
+                  classes={classes}
                   today={today}
                   index={index}
                   showDetails

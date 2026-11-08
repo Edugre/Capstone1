@@ -2,18 +2,20 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { AssignmentItem } from "@/lib/data";
+import type { AssignmentItem, ClassOption } from "@/lib/data";
 import { addDays, formatDate, plural } from "@/lib/format";
 import AssignmentRow from "./assignment-row";
 import { LeafIcon } from "./icons";
 
 export default function WeekPlanner({
   assignments,
+  classes,
   today,
   children,
 }: {
   /** Open assignments that are overdue or due within the next 7 days. */
   assignments: AssignmentItem[];
+  classes: ClassOption[];
   today: string;
   children: React.ReactNode;
 }) {
@@ -160,6 +162,7 @@ export default function WeekPlanner({
                     <AssignmentRow
                       key={a.assignment_id}
                       assignment={a}
+                      classes={classes}
                       today={today}
                       index={i}
                     />

@@ -99,7 +99,7 @@ async function Home() {
           </p>
         </div>
       ) : (
-        <WeekPlanner assignments={upcoming} today={today}>
+        <WeekPlanner assignments={upcoming} classes={classes} today={today}>
           <aside
             aria-labelledby="your-classes"
             className="flex min-w-0 flex-[1_1_20rem] animate-rise flex-col gap-3 [animation-delay:320ms]"

@@ -213,6 +213,11 @@ body {
   box-shadow: 0 10px 24px rgb(140 90 40 / 0.1);
 }
 
+/* Keep the page still behind an open modal (e.g. Edit assignment). */
+html:has(dialog[open]:modal) {
+  overflow: hidden;
+}
+
 .ring-draw {
   animation: draw 1.4s 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
@@ -220,7 +225,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
-  *::after {
+  *::after,
+  ::backdrop {
     animation: none !important;
     transition: none !important;
   }

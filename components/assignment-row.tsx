@@ -1,25 +1,29 @@
 "use client";
 
-import { startTransition, useOptimistic } from "react";
+import { startTransition, useOptimistic, useState } from "react";
 import { setAssignmentCompleted, setStepCompleted } from "@/lib/actions";
-import type { AssignmentItem } from "@/lib/data";
+import type { AssignmentItem, ClassOption } from "@/lib/data";
 import { formatDue } from "@/lib/format";
-import { CheckIcon, ChevronIcon } from "./icons";
+import EditAssignmentDialog from "./edit-assignment-dialog";
+import { CheckIcon, ChevronIcon, PencilIcon } from "./icons";
 import { useToast } from "./toast";
 
 export default function AssignmentRow({
   assignment: a,
+  classes,
   today,
   showDetails = false,
   index = 0,
 }: {
   assignment: AssignmentItem;
+  classes: ClassOption[];
   today: string;
   showDetails?: boolean;
   index?: number;
 }) {
   const toast = useToast();
   const [completed, setCompleted] = useOptimistic(a.is_completed);
+  const [editing, setEditing] = useState(false);
 
   function toggle() {
     const next = !completed;
@@ -111,10 +115,29 @@ export default function AssignmentRow({
           </span>
         </div>
 
-        <span className={`text-sm font-extrabold whitespace-nowrap ${dueColor}`}>
-          {formatDue(a.due_date, today, completed)}
-        </span>
+        <div className="ml-auto flex items-center gap-0.5">
+          <span className={`text-sm font-extrabold whitespace-nowrap ${dueColor}`}>
+            {formatDue(a.due_date, today, completed)}
+          </span>
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            aria-label={`Edit ${a.title}`}
+            title="Edit"
+            className="-mr-2 flex size-10 flex-none cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-warm-2 hover:text-ink focus-visible:outline-3 focus-visible:outline-focus"
+          >
+            <PencilIcon className="size-4.5 stroke-[2.2]" />
+          </button>
+        </div>
       </div>
+
+      {editing && (
+        <EditAssignmentDialog
+          assignment={a}
+          classes={classes}
+          onClose={() => setEditing(false)}
+        />
+      )}
 
       {hasDetails && (
         <details className="group mt-0.5 ml-[3.25rem]">
