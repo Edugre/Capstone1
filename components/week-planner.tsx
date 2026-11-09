@@ -165,6 +165,7 @@ export default function WeekPlanner({
                       classes={classes}
                       today={today}
                       index={i}
+                      showDetails
                     />
                   ))}
                 </ul>
