@@ -110,21 +110,15 @@ export default function EditAssignmentDialog({
       onClick={(e) => {
         if (pressedBackdrop.current && e.target === e.currentTarget) close();
       }}
-      className="m-auto max-h-[calc(100dvh-2rem)] w-[min(34rem,calc(100%-2rem))] animate-rise overflow-y-auto rounded-3xl border border-line bg-surface p-0 text-ink shadow-[0_24px_60px_rgb(60_35_15/0.25)] backdrop:animate-fade backdrop:bg-[rgb(35_22_14/0.45)] backdrop:backdrop-blur-[2px]"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[min(34rem,calc(100%-2rem))] animate-rise overflow-y-auto rounded-3xl border border-line bg-surface p-0 text-ink shadow-dialog backdrop:animate-fade backdrop:bg-backdrop backdrop:backdrop-blur-[2px]"
     >
       <div className="p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <span
-            className={`flex size-10 flex-none items-center justify-center rounded-xl ${
-              confirming ? "bg-late-soft text-late" : "bg-accent-soft text-link-hover"
-            }`}
-          >
-            {confirming ? (
-              <TrashIcon className="size-5 stroke-[2.2]" />
-            ) : (
-              <PencilIcon className="size-5 stroke-[2.2]" />
-            )}
-          </span>
+        <div className="mb-4 flex items-center gap-2.5">
+          {confirming ? (
+            <TrashIcon className="size-5.5 flex-none stroke-[2.2] text-late" />
+          ) : (
+            <PencilIcon className="size-5.5 flex-none stroke-[2.2] text-link-hover" />
+          )}
           <h2 id={`edit-${a.assignment_id}`} className="flex-1 text-[22px] font-black">
             {confirming ? "Delete assignment?" : "Edit assignment"}
           </h2>

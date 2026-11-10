@@ -55,32 +55,27 @@ export default function AssignmentList({
   const groups = [
     {
       label: "Catch up",
-      hint: "A little behind — start with these",
-      chip: "bg-late-soft text-late",
+      hint: "A little behind, so start with these",
       items: open.filter(isLate),
     },
     {
       label: "This week",
       hint: `Today through ${formatDate(weekEnd)}`,
-      chip: "bg-today-soft text-today",
       items: open.filter((a) => a.due_date >= today && a.due_date <= weekEnd),
     },
     {
       label: "Next week",
-      hint: `${formatDate(addDays(weekEnd, 1), short)} – ${formatDate(nextWeekEnd, short)}`,
-      chip: "bg-(--tint-0-bg) text-(--tint-0-fg)",
+      hint: `${formatDate(addDays(weekEnd, 1), short)} to ${formatDate(nextWeekEnd, short)}`,
       items: open.filter((a) => a.due_date > weekEnd && a.due_date <= nextWeekEnd),
     },
     {
       label: "Later this term",
       hint: "Plenty of time",
-      chip: "bg-(--tint-3-bg) text-(--tint-3-fg)",
       items: open.filter((a) => a.due_date > nextWeekEnd),
     },
     {
       label: "Done",
       hint: "Look at you go",
-      chip: "bg-(--tint-1-bg) text-(--tint-1-fg)",
       items: shown.filter((a) => a.is_completed).reverse(),
     },
   ].filter((g) => g.items.length > 0);
@@ -163,11 +158,11 @@ export default function AssignmentList({
           <section
             key={group.label}
             aria-label={group.label}
-            className="animate-rise rounded-3xl border border-line bg-surface px-2 pt-4.5 pb-2 sm:px-3.5 sm:pb-3"
+            className="animate-rise pt-2"
             style={{ animationDelay: `${120 + i * 80}ms` }}
           >
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2 px-2 pb-2.5">
-              <h2 className={`rounded-full px-3.5 py-0.5 text-sm font-black ${group.chip}`}>
+              <h2 className="text-[17px] font-black">
                 {group.label}
               </h2>
               <span className="text-sm font-bold text-muted">{group.hint}</span>
