@@ -41,9 +41,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toast && (
           <div
             key={toast.id}
-            className="pointer-events-auto flex animate-toast items-center gap-3 rounded-full bg-ink py-2 pr-2 pl-5 text-[15px] font-bold text-canvas shadow-[0_12px_30px_rgb(60_35_15/0.25)]"
+            className="pointer-events-auto flex animate-toast items-center gap-3 rounded-full bg-ink py-2 pr-2 pl-5 text-[15px] font-bold text-canvas shadow-toast"
           >
-            <CheckIcon className="size-5 flex-none stroke-[2.6] text-check" />
+            <CheckIcon className="size-5 flex-none stroke-[2.6] text-toast-icon" />
             <span>{toast.message}</span>
             {toast.onUndo && (
               <button

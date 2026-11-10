@@ -54,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="flex flex-1 flex-col pb-24 sm:pb-0">{children}</div>
           <nav
             aria-label="Main"
-            className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-[0_8px_20px_rgb(140_90_40/0.08)] sm:hidden"
+            className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-nav sm:hidden"
           >
             <MobileNavLinks />
           </nav>

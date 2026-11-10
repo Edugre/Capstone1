@@ -58,7 +58,7 @@ export default function AssignmentFields({
           className="flex-[1_1_12rem]"
         />
       </div>
-      <Field label="Notes" hint="Optional — chapters, links, reminders">
+      <Field label="Notes" hint="Optional: chapters, links, reminders">
         <textarea
           name="description"
           rows={3}
