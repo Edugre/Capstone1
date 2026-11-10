@@ -21,6 +21,7 @@ export default function AddClassForm({
           name="className"
           type="text"
           required
+          maxLength={100}
           placeholder="e.g. Linear Algebra"
           className={fieldClass}
         />
@@ -30,6 +31,7 @@ export default function AddClassForm({
           name="classCode"
           type="text"
           required
+          maxLength={100}
           placeholder="e.g. MAS 3105"
           className={fieldClass}
         />

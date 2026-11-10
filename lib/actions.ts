@@ -20,6 +20,12 @@ export async function addClass(
   if (!className || !classCode) {
     return { error: "Class name and class code are required." };
   }
+  if (className.length > 100) {
+  return { error: "Class name must be 100 characters or fewer." };
+  }
+  if (classCode.length > 100) {
+    return { error: "Class code must be 100 characters or fewer." };
+  }
 
   const { error } = await supabase.from("classes").insert({
     class_name: className,
@@ -45,6 +51,9 @@ function readAssignment(formData: FormData) {
   const priority = String(formData.get("priority") ?? "Medium");
   if (!title || !isId(classId) || !dueDate) {
     return { error: "Title, class, and due date are required." } as const;
+  }
+  if (title.length > 150) {
+  return { error: "Assignment title must be 150 characters or fewer." } as const;
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
     return { error: "Due date must be a valid date." } as const;
