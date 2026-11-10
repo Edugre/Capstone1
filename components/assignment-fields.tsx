@@ -23,6 +23,7 @@ export default function AssignmentFields({
           name="title"
           type="text"
           required
+          maxLength={150}
           placeholder="e.g. Problem Set 9"
           defaultValue={defaults?.title}
           className={fieldClass}

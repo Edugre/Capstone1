@@ -149,8 +149,14 @@ export default function AssignmentList({
       {groups.length === 0 ? (
         <div className="flex animate-rise flex-col items-center gap-1.5 rounded-3xl bg-done-card px-6 py-10 text-center">
           <LeafIcon className="size-11 stroke-[1.8] text-done" />
-          <p className="text-lg font-black">All clear here</p>
-          <p className="text-ink-2">Nothing matches these filters. Nice.</p>
+          <p className="text-lg font-black">
+            {assignments.length === 0 ? "Let's get started!" : "All clear here"}
+          </p>
+          <p className="text-ink-2">
+            {assignments.length === 0
+              ? "No assignments yet! Add your first assignment to get started."
+              : "Nothing matches these filters. Nice."}
+          </p>
         </div>
       ) : (
         groups.map((group, i) => (
