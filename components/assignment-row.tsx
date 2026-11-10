@@ -83,7 +83,7 @@ export default function AssignmentRow({
       className={`lift animate-rise rounded-[18px] py-2.5 pr-4 pl-2 ${card}`}
       style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
     >
-      <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
+      <div className="flex items-center gap-x-2.5 gap-y-2 sm:flex-wrap sm:gap-x-3.5">
         <button
           type="button"
           onClick={toggle}
@@ -100,7 +100,7 @@ export default function AssignmentRow({
           )}
         </button>
 
-        <div className="flex min-w-0 flex-[1_1_10rem] flex-col gap-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-[1_1_10rem]">
           <span
             className={`font-extrabold ${completed ? "text-muted line-through" : ""}`}
           >
@@ -113,6 +113,10 @@ export default function AssignmentRow({
             >
               {a.class_code}
             </span>
+            {/* Phones: due date joins this line so the row doesn't wrap. */}
+            <span className={`font-extrabold whitespace-nowrap sm:hidden ${dueColor}`}>
+              {formatDue(a.due_date, today, completed)}
+            </span>
             <span>{a.priority} priority</span>
             {steps.length > 0 && (
               <span>
@@ -123,7 +127,9 @@ export default function AssignmentRow({
         </div>
 
         <div className="ml-auto flex items-center gap-0.5">
-          <span className={`text-sm font-extrabold whitespace-nowrap ${dueColor}`}>
+          <span
+            className={`hidden text-sm font-extrabold whitespace-nowrap sm:inline ${dueColor}`}
+          >
             {formatDue(a.due_date, today, completed)}
           </span>
           <button

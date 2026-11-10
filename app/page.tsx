@@ -60,14 +60,14 @@ async function Home() {
           </div>
           <div className="mt-2 flex flex-wrap gap-2.5">
             <Link
-              href="/assignments"
+              href="/assignments#add-assignment"
               className="lift flex min-h-12 items-center gap-2 rounded-full bg-accent px-5.5 text-[15px] font-extrabold text-on-accent"
             >
               <PlusIcon className="size-4.5 stroke-[2.6]" />
               Add assignment
             </Link>
             <Link
-              href="/classes"
+              href="/classes#add-class"
               className="lift flex min-h-12 items-center rounded-full bg-surface px-5.5 text-[15px] font-extrabold text-ink ring-1 ring-line-strong ring-inset"
             >
               Add class

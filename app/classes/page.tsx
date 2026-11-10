@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import AddClassForm from "@/components/add-class-form";
-import { AlertIcon, ArrowIcon, BookIcon } from "@/components/icons";
+import { AlertIcon, ArrowIcon, BookIcon, PlusIcon } from "@/components/icons";
+import ScrollToHash from "@/components/scroll-to-hash";
 import ProgressRing from "@/components/progress-ring";
 import { getTracker, type ClassItem } from "@/lib/data";
 import { formatDue, plural } from "@/lib/format";
@@ -36,6 +37,14 @@ async function Classes() {
           Your classes
         </h1>
         <p className="text-[17px] text-ink-2">{summary}</p>
+        {/* On phones the form sits below every class card; give a shortcut. */}
+        <a
+          href="#add-class"
+          className="mt-2 flex min-h-11 items-center gap-2 self-start rounded-full bg-accent px-5 text-[15px] font-extrabold text-on-accent sm:hidden"
+        >
+          <PlusIcon className="size-4.5 stroke-[2.6]" />
+          Add class
+        </a>
       </div>
 
       <div className="flex flex-wrap items-start gap-6">
@@ -62,10 +71,11 @@ async function Classes() {
             <span className="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-link-hover">
               <BookIcon className="size-5" />
             </span>
-            <h2 id="add-class" className="text-[22px] font-black">
+            <h2 id="add-class" className="scroll-mt-6 text-[22px] font-black">
               Add a class
             </h2>
           </div>
+          <ScrollToHash id="add-class" />
           <AddClassForm defaultSemester={semesters.at(-1)} />
         </aside>
       </div>
@@ -141,7 +151,7 @@ function ClassCard({
 function ClassesSkeleton() {
   return (
     <div aria-busy="true" aria-label="Loading classes" className="flex flex-col gap-6">
-      <div className="h-20 w-80 animate-pulse rounded-2xl bg-warm-2" />
+      <div className="h-20 w-full max-w-80 animate-pulse rounded-2xl bg-warm-2" />
       <div className="flex flex-wrap gap-6">
         <div className="h-[28rem] flex-[999_1_37rem] animate-pulse rounded-3xl bg-warm-2" />
         <div className="h-[28rem] flex-[1_1_20rem] animate-pulse rounded-3xl bg-warm-2" />

@@ -90,7 +90,7 @@ export default function AssignmentList({
       <div className="flex animate-rise flex-col gap-3 [animation-delay:80ms]">
         <div
           aria-label="Show"
-          className="flex flex-wrap gap-1.5 self-start rounded-full border border-line bg-surface p-1.5"
+          className="grid grid-cols-2 gap-1.5 rounded-3xl border border-line bg-surface p-1.5 sm:flex sm:flex-wrap sm:self-start sm:rounded-full"
         >
           {statusTabs.map((tab) => {
             const selected = status === tab.value;
@@ -163,7 +163,7 @@ export default function AssignmentList({
           <section
             key={group.label}
             aria-label={group.label}
-            className="animate-rise rounded-3xl border border-line bg-surface px-3.5 pt-4.5 pb-3"
+            className="animate-rise rounded-3xl border border-line bg-surface px-2 pt-4.5 pb-2 sm:px-3.5 sm:pb-3"
             style={{ animationDelay: `${120 + i * 80}ms` }}
           >
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2 px-2 pb-2.5">
