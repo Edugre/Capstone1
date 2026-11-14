@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import Link from "next/link";
 import NavLinks, { MobileNavLinks } from "@/components/nav-links";
 import { MugIcon } from "@/components/icons";
+import { SignedInOnly, SignOutButton } from "@/components/app-chrome";
 import ThemeToggle from "@/components/theme-toggle";
 import { ToastProvider } from "@/components/toast";
 import "./globals.css";
@@ -44,20 +45,27 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </span>
               </Link>
               <div className="flex items-center gap-2.5">
-                <nav aria-label="Main" className="hidden sm:block">
-                  <NavLinks />
-                </nav>
+                <SignedInOnly>
+                  <nav aria-label="Main" className="hidden sm:block">
+                    <NavLinks />
+                  </nav>
+                </SignedInOnly>
                 <ThemeToggle />
+                <SignedInOnly>
+                  <SignOutButton />
+                </SignedInOnly>
               </div>
             </div>
           </header>
           <div className="flex flex-1 flex-col pb-24 sm:pb-0">{children}</div>
-          <nav
-            aria-label="Main"
-            className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-nav sm:hidden"
-          >
-            <MobileNavLinks />
-          </nav>
+          <SignedInOnly>
+            <nav
+              aria-label="Main"
+              className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-nav sm:hidden"
+            >
+              <MobileNavLinks />
+            </nav>
+          </SignedInOnly>
         </ToastProvider>
       </body>
     </html>
