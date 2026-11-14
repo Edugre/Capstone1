@@ -40,13 +40,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <span className="flex size-10.5 animate-bob items-center justify-center rounded-[14px] bg-accent text-on-accent">
                   <MugIcon className="size-6" />
                 </span>
-                <span className="text-xl font-black tracking-tight">
+                <span className="text-xl font-black tracking-tight whitespace-nowrap">
                   Student Tracker
                 </span>
               </Link>
               <div className="flex items-center gap-2.5">
                 <SignedInOnly>
-                  <nav aria-label="Main" className="hidden sm:block">
+                  <nav aria-label="Main" className="hidden md:block">
                     <NavLinks />
                   </nav>
                 </SignedInOnly>
@@ -57,11 +57,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </div>
             </div>
           </header>
-          <div className="flex flex-1 flex-col pb-24 sm:pb-0">{children}</div>
+          <div className="flex flex-1 flex-col pb-24 md:pb-0">{children}</div>
           <SignedInOnly>
             <nav
               aria-label="Main"
-              className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-nav sm:hidden"
+              className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 rounded-3xl border border-line bg-surface p-1.5 shadow-nav md:hidden"
             >
               <MobileNavLinks />
             </nav>
