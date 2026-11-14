@@ -1,6 +1,7 @@
 import "server-only";
 import { cacheTag } from "next/cache";
 import { connection } from "next/server";
+import { getCurrentUser } from "./auth";
 import { supabase } from "./supabase";
 import {
   addDays,
@@ -35,28 +36,32 @@ type StepRow = {
   is_completed: boolean;
 };
 
-async function getClassRows(): Promise<ClassRow[]> {
+// Each cached read takes the user id, so it is part of the cache key and
+// one user's rows never come back for another.
+async function getClassRows(userId: string): Promise<ClassRow[]> {
   "use cache";
-  cacheTag("classes");
+  cacheTag(`classes:${userId}`);
 
   const { data, error } = await supabase
     .from("classes")
     .select("class_id, class_name, class_code, instructor, semester")
+    .eq("user_id", userId)
     .order("class_id");
 
   if (error) throw new Error(`Failed to load classes: ${error.message}`);
   return data;
 }
 
-async function getAssignmentRows(): Promise<AssignmentRow[]> {
+async function getAssignmentRows(userId: string): Promise<AssignmentRow[]> {
   "use cache";
-  cacheTag("assignments");
+  cacheTag(`assignments:${userId}`);
 
   const { data, error } = await supabase
     .from("assignments")
     .select(
       "assignment_id, class_id, title, description, due_date, priority, is_completed",
     )
+    .eq("user_id", userId)
     .order("due_date")
     .order("assignment_id");
 
@@ -65,13 +70,14 @@ async function getAssignmentRows(): Promise<AssignmentRow[]> {
 }
 
 // Tasks that belong to an assignment are shown as its steps.
-async function getStepRows(): Promise<StepRow[]> {
+async function getStepRows(userId: string): Promise<StepRow[]> {
   "use cache";
-  cacheTag("tasks");
+  cacheTag(`tasks:${userId}`);
 
   const { data, error } = await supabase
     .from("tasks")
     .select("task_id, assignment_id, title, is_completed")
+    .eq("user_id", userId)
     .not("assignment_id", "is", null)
     .order("due_date")
     .order("task_id");
@@ -115,10 +121,11 @@ export type Tracker = {
 };
 
 export async function getTracker(): Promise<Tracker> {
+  const user = await getCurrentUser();
   const [classRows, assignmentRows, stepRows] = await Promise.all([
-    getClassRows(),
-    getAssignmentRows(),
-    getStepRows(),
+    getClassRows(user.id),
+    getAssignmentRows(user.id),
+    getStepRows(user.id),
   ]);
 
   // "Today" must be read per request, not frozen into a cached result.
