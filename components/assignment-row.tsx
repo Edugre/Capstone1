@@ -80,10 +80,10 @@ export default function AssignmentRow({
 
   return (
     <li
-      className={`lift animate-rise rounded-[18px] py-2.5 pr-4 pl-2 ${card}`}
+      className={`animate-rise rounded-[18px] py-2.5 pr-4 pl-2 ${card}`}
       style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
     >
-      <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
+      <div className="flex items-center gap-x-2.5 gap-y-2 sm:flex-wrap sm:gap-x-3.5">
         <button
           type="button"
           onClick={toggle}
@@ -92,15 +92,15 @@ export default function AssignmentRow({
           className="flex size-11 flex-none cursor-pointer items-center justify-center rounded-full"
         >
           {completed ? (
-            <span className="flex size-7 animate-pop items-center justify-center rounded-full bg-check text-white">
+            <span className="flex size-7 animate-pop items-center justify-center rounded-full bg-check text-on-check">
               <CheckIcon className="size-4 stroke-[3.2]" />
             </span>
           ) : (
-            <span className="size-7 rounded-full border-[2.5px] border-idle bg-surface transition-colors hover:border-accent" />
+            <span className="size-7 rounded-full border-[2.5px] border-idle bg-surface transition-colors hover:border-link" />
           )}
         </button>
 
-        <div className="flex min-w-0 flex-[1_1_10rem] flex-col gap-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-[1_1_10rem]">
           <span
             className={`font-extrabold ${completed ? "text-muted line-through" : ""}`}
           >
@@ -113,6 +113,10 @@ export default function AssignmentRow({
             >
               {a.class_code}
             </span>
+            {/* Phones: due date joins this line so the row doesn't wrap. */}
+            <span className={`font-extrabold whitespace-nowrap sm:hidden ${dueColor}`}>
+              {formatDue(a.due_date, today, completed)}
+            </span>
             <span>{a.priority} priority</span>
             {steps.length > 0 && (
               <span>
@@ -123,7 +127,9 @@ export default function AssignmentRow({
         </div>
 
         <div className="ml-auto flex items-center gap-0.5">
-          <span className={`text-sm font-extrabold whitespace-nowrap ${dueColor}`}>
+          <span
+            className={`hidden text-sm font-extrabold whitespace-nowrap sm:inline ${dueColor}`}
+          >
             {formatDue(a.due_date, today, completed)}
           </span>
           <button
@@ -168,11 +174,11 @@ export default function AssignmentRow({
                       }`}
                     >
                       {step.is_completed ? (
-                        <span className="flex size-5 flex-none animate-pop items-center justify-center rounded-md bg-check text-white">
+                        <span className="flex size-5 flex-none animate-pop items-center justify-center rounded-md bg-check text-on-check">
                           <CheckIcon className="size-3.5 stroke-[3.5]" />
                         </span>
                       ) : (
-                        <span className="size-5 flex-none rounded-md border-2 border-idle bg-surface transition-colors hover:border-accent" />
+                        <span className="size-5 flex-none rounded-md border-2 border-idle bg-surface transition-colors hover:border-link" />
                       )}
                       <span className="min-w-0 break-words">{step.title}</span>
                     </button>

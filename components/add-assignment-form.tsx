@@ -72,7 +72,7 @@ export default function AddAssignmentForm({
         <legend className="pb-1.5 text-sm font-extrabold text-ink-2">
           Steps{" "}
           <span className="font-semibold text-muted">
-            Optional — break it into smaller pieces
+            Optional: break it into smaller pieces
           </span>
         </legend>
         <div className="flex gap-2">
@@ -105,7 +105,7 @@ export default function AddAssignmentForm({
             {steps.map((step, index) => (
               <li
                 key={step.id}
-                className="flex animate-fade items-center gap-2.5 rounded-[14px] bg-soft py-1 pr-1 pl-3.5 text-sm font-bold ring-1 ring-line ring-inset"
+                className="flex animate-fade items-center gap-2.5 border-b border-line py-1 pl-1 text-sm font-bold last:border-b-0"
               >
                 <span className="text-muted">{index + 1}.</span>
                 <span className="min-w-0 flex-1 break-words">{step.title}</span>

@@ -23,6 +23,7 @@ export default function AssignmentFields({
           name="title"
           type="text"
           required
+          maxLength={150}
           placeholder="e.g. Problem Set 9"
           defaultValue={defaults?.title}
           className={fieldClass}
@@ -57,7 +58,7 @@ export default function AssignmentFields({
           className="flex-[1_1_12rem]"
         />
       </div>
-      <Field label="Notes" hint="Optional — chapters, links, reminders">
+      <Field label="Notes" hint="Optional: chapters, links, reminders">
         <textarea
           name="description"
           rows={3}

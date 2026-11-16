@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import AddAssignmentForm from "@/components/add-assignment-form";
 import AssignmentList from "@/components/assignment-list";
+import ScrollToHash from "@/components/scroll-to-hash";
 import { PlusIcon } from "@/components/icons";
 import { getTracker } from "@/lib/data";
 
@@ -14,6 +15,14 @@ export default function AssignmentsPage() {
         <Suspense fallback={<p className="h-7" />}>
           <Summary />
         </Suspense>
+        {/* On phones the form sits below the whole list; give a shortcut. */}
+        <a
+          href="#add-assignment"
+          className="mt-2 flex min-h-11 items-center gap-2 self-start rounded-full bg-accent px-5 text-[15px] font-extrabold text-on-accent sm:hidden"
+        >
+          <PlusIcon className="size-4.5 stroke-[2.6]" />
+          Add assignment
+        </a>
       </div>
       <Suspense fallback={<AssignmentsSkeleton />}>
         <Assignments />
@@ -54,14 +63,10 @@ async function Assignments() {
         aria-labelledby="add-assignment"
         className="min-w-0 flex-[1_1_20rem] animate-rise rounded-3xl border border-line bg-surface p-6 [animation-delay:160ms]"
       >
-        <div className="mb-4 flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-accent-soft text-link-hover">
-            <PlusIcon className="size-5 stroke-[2.4]" />
-          </span>
-          <h2 id="add-assignment" className="text-[22px] font-black">
-            Add something new
-          </h2>
-        </div>
+        <h2 id="add-assignment" className="mb-4 scroll-mt-6 text-[22px] font-black">
+          Add something new
+        </h2>
+        <ScrollToHash id="add-assignment" />
         <AddAssignmentForm classes={classes} />
       </aside>
     </div>

@@ -55,32 +55,27 @@ export default function AssignmentList({
   const groups = [
     {
       label: "Catch up",
-      hint: "A little behind — start with these",
-      chip: "bg-late-soft text-late",
+      hint: "A little behind, so start with these",
       items: open.filter(isLate),
     },
     {
       label: "This week",
       hint: `Today through ${formatDate(weekEnd)}`,
-      chip: "bg-today-soft text-today",
       items: open.filter((a) => a.due_date >= today && a.due_date <= weekEnd),
     },
     {
       label: "Next week",
-      hint: `${formatDate(addDays(weekEnd, 1), short)} – ${formatDate(nextWeekEnd, short)}`,
-      chip: "bg-(--tint-0-bg) text-(--tint-0-fg)",
+      hint: `${formatDate(addDays(weekEnd, 1), short)} to ${formatDate(nextWeekEnd, short)}`,
       items: open.filter((a) => a.due_date > weekEnd && a.due_date <= nextWeekEnd),
     },
     {
       label: "Later this term",
       hint: "Plenty of time",
-      chip: "bg-(--tint-3-bg) text-(--tint-3-fg)",
       items: open.filter((a) => a.due_date > nextWeekEnd),
     },
     {
       label: "Done",
       hint: "Look at you go",
-      chip: "bg-(--tint-1-bg) text-(--tint-1-fg)",
       items: shown.filter((a) => a.is_completed).reverse(),
     },
   ].filter((g) => g.items.length > 0);
@@ -90,7 +85,7 @@ export default function AssignmentList({
       <div className="flex animate-rise flex-col gap-3 [animation-delay:80ms]">
         <div
           aria-label="Show"
-          className="flex flex-wrap gap-1.5 self-start rounded-full border border-line bg-surface p-1.5"
+          className="grid grid-cols-2 gap-1.5 rounded-3xl border border-line bg-surface p-1.5 sm:flex sm:flex-wrap sm:self-start sm:rounded-full"
         >
           {statusTabs.map((tab) => {
             const selected = status === tab.value;
@@ -149,19 +144,25 @@ export default function AssignmentList({
       {groups.length === 0 ? (
         <div className="flex animate-rise flex-col items-center gap-1.5 rounded-3xl bg-done-card px-6 py-10 text-center">
           <LeafIcon className="size-11 stroke-[1.8] text-done" />
-          <p className="text-lg font-black">All clear here</p>
-          <p className="text-ink-2">Nothing matches these filters. Nice.</p>
+          <p className="text-lg font-black">
+            {assignments.length === 0 ? "Let's get started!" : "All clear here"}
+          </p>
+          <p className="text-ink-2">
+            {assignments.length === 0
+              ? "No assignments yet! Add your first assignment to get started."
+              : "Nothing matches these filters. Nice."}
+          </p>
         </div>
       ) : (
         groups.map((group, i) => (
           <section
             key={group.label}
             aria-label={group.label}
-            className="animate-rise rounded-3xl border border-line bg-surface px-3.5 pt-4.5 pb-3"
+            className="animate-rise pt-2"
             style={{ animationDelay: `${120 + i * 80}ms` }}
           >
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2 px-2 pb-2.5">
-              <h2 className={`rounded-full px-3.5 py-0.5 text-sm font-black ${group.chip}`}>
+              <h2 className="text-[17px] font-black">
                 {group.label}
               </h2>
               <span className="text-sm font-bold text-muted">{group.hint}</span>
