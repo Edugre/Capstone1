@@ -17,12 +17,11 @@ export default function HomePage() {
 }
 
 async function Home() {
-  const { today, weekEnd, hour, classes, assignments } = await getTracker();
+  const { today, hour, classes, assignments } = await getTracker();
 
   const open = assignments.filter((a) => !a.is_completed);
   const late = open.filter((a) => a.due_date < today).length;
   const dueToday = open.filter((a) => a.due_date === today).length;
-  const upcoming = open.filter((a) => a.due_date <= weekEnd);
   const done = assignments.length - open.length;
 
   let summary = "Nothing urgent today. A good moment to get ahead.";
@@ -99,7 +98,7 @@ async function Home() {
           </p>
         </div>
       ) : (
-        <WeekPlanner assignments={upcoming} classes={classes} today={today}>
+        <WeekPlanner assignments={open} classes={classes} today={today}>
           <aside
             aria-labelledby="your-classes"
             className="flex min-w-0 flex-[1_1_20rem] animate-rise flex-col gap-3 [animation-delay:320ms]"
