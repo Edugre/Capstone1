@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import AddClassForm from "@/components/add-class-form";
+import EditClassButton from "@/components/edit-class-button";
 import WeeklyClassCalendar from "@/components/weekly-class-calendar";
 import { AlertIcon, ArrowIcon, BookIcon, PlusIcon } from "@/components/icons";
 import ScrollToHash from "@/components/scroll-to-hash";
@@ -128,13 +129,28 @@ function ClassCard({
         </p>
       )}
 
-      <Link
-        href="/assignments"
-        className="mt-auto flex min-h-12 items-center justify-center gap-1.5 rounded-full bg-surface text-[15px] font-extrabold text-ink"
-      >
-        See assignments
-        <ArrowIcon className="size-4 stroke-[2.6]" />
-      </Link>
+      <div className="mt-auto flex gap-2">
+        <Link
+          href="/assignments"
+          className="flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-full bg-surface text-[15px] font-extrabold text-ink"
+        >
+          See assignments
+          <ArrowIcon className="size-4 stroke-[2.6]" />
+        </Link>
+        <EditClassButton
+          classItem={{
+            class_id: c.class_id,
+            class_name: c.class_name,
+            class_code: c.class_code,
+            instructor: c.instructor,
+            semester: c.semester,
+            meeting_days: c.meeting_days,
+            start_time: c.start_time,
+            end_time: c.end_time,
+            total: c.total,
+          }}
+        />
+      </div>
     </li>
   );
 }

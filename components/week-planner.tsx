@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { AssignmentItem, ClassOption } from "@/lib/data";
 import { addDays, formatDate, plural } from "@/lib/format";
 import AssignmentRow from "./assignment-row";
-import { LeafIcon } from "./icons";
+import { ChevronIcon, LeafIcon } from "./icons";
 
 export default function WeekPlanner({
   assignments,
@@ -13,16 +13,27 @@ export default function WeekPlanner({
   today,
   children,
 }: {
-  /** Open assignments that are overdue or due within the next 7 days. */
+  /** All open assignments; the planner picks out the week being shown. */
   assignments: AssignmentItem[];
   classes: ClassOption[];
   today: string;
   children: React.ReactNode;
 }) {
   const [day, setDay] = useState<string | null>(null);
+  // 0 is the 7 days starting today; 1 is the 7 after that, and so on.
+  const [week, setWeek] = useState(0);
 
-  const days = Array.from({ length: 7 }, (_, i) => addDays(today, i));
+  const start = addDays(today, week * 7);
+  const end = addDays(start, 6);
+  const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
   const dueOnDay = assignments.filter((a) => a.due_date === day);
+  const inWeek = assignments.filter((a) => a.due_date >= start && a.due_date <= end);
+  const range = `${formatDate(start, { month: "short", day: "numeric" })} – ${formatDate(end, { month: "short", day: "numeric" })}`;
+
+  function goToWeek(next: number) {
+    setWeek(next);
+    setDay(null);
+  }
 
   const groups = day
     ? [
@@ -32,7 +43,15 @@ export default function WeekPlanner({
           items: dueOnDay,
         },
       ]
-    : [
+    : week > 0
+      ? [
+          {
+            label: "Due this week",
+            hint: plural(inWeek.length, "thing"),
+            items: inWeek,
+          },
+        ]
+      : [
         {
           label: "Catch up",
           hint: "A little behind, no stress",
@@ -46,7 +65,7 @@ export default function WeekPlanner({
         {
           label: "Coming up",
           hint: "Later this week",
-          items: assignments.filter((a) => a.due_date > today),
+          items: inWeek.filter((a) => a.due_date > today),
         },
       ];
   const visible = groups.filter((g) => g.items.length > 0);
@@ -59,7 +78,7 @@ export default function WeekPlanner({
       >
         <div className="mb-3.5 flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="your-week" className="text-[22px] font-black">
-            Your week
+            {week === 0 ? "Your week" : week === 1 ? "Next week" : `In ${week} weeks`}
           </h2>
           <span className="text-sm text-muted">Tap a day to see what&apos;s due</span>
         </div>
@@ -111,6 +130,28 @@ export default function WeekPlanner({
             );
           })}
         </div>
+        <div className="mt-3.5 flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => goToWeek(week - 1)}
+            disabled={week === 0}
+            aria-label="Previous week"
+            className="flex size-11 flex-none cursor-pointer items-center justify-center rounded-full bg-canvas text-ink transition-colors hover:bg-warm-2 disabled:cursor-default disabled:opacity-35 disabled:hover:bg-canvas"
+          >
+            <ChevronIcon className="size-5 rotate-180 stroke-[2.6]" />
+          </button>
+          <span aria-live="polite" className="text-sm font-extrabold text-ink-2">
+            {range}
+          </span>
+          <button
+            type="button"
+            onClick={() => goToWeek(week + 1)}
+            aria-label="Next week"
+            className="flex size-11 flex-none cursor-pointer items-center justify-center rounded-full bg-canvas text-ink transition-colors hover:bg-warm-2"
+          >
+            <ChevronIcon className="size-5 stroke-[2.6]" />
+          </button>
+        </div>
       </section>
 
       <div className="flex flex-wrap items-start gap-6">
@@ -122,15 +163,17 @@ export default function WeekPlanner({
             <h2 id="up-next" className="text-[22px] font-black">
               {day
                 ? formatDate(day, { weekday: "long", month: "long", day: "numeric" })
-                : "Up next"}
+                : week > 0
+                  ? `Week of ${formatDate(start, { month: "long", day: "numeric" })}`
+                  : "Up next"}
             </h2>
-            {day ? (
+            {day || week > 0 ? (
               <button
                 type="button"
-                onClick={() => setDay(null)}
+                onClick={() => (day ? setDay(null) : goToWeek(0))}
                 className="min-h-11 cursor-pointer rounded-full bg-warm-2 px-3.5 text-sm font-extrabold text-link-hover"
               >
-                Show whole week
+                {day ? "Show whole week" : "Back to this week"}
               </button>
             ) : (
               <Link
@@ -149,7 +192,9 @@ export default function WeekPlanner({
               <p className="text-[15px] text-ink-2">
                 {day
                   ? "A free day is a good day to get ahead or rest."
-                  : "Nothing due in the next 7 days."}
+                  : week > 0
+                    ? "Nothing due that week."
+                    : "Nothing due in the next 7 days."}
               </p>
             </div>
           ) : (
