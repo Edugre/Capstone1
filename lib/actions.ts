@@ -27,38 +27,132 @@ function optional(value: FormDataEntryValue | null) {
   return text || null;
 }
 
+function isId(value: number) {
+  return Number.isInteger(value) && value > 0;
+}
+
+// Shared by add and edit so both forms follow the same rules.
+function readClass(formData: FormData) {
+  const className = String(formData.get("className") ?? "").trim();
+  const classCode = String(formData.get("classCode") ?? "").trim();
+  if (!className || !classCode) {
+    return { error: "Class name and class code are required." } as const;
+  }
+  if (className.length > 100) {
+    return { error: "Class name must be 100 characters or fewer." } as const;
+  }
+  if (classCode.length > 100) {
+    return { error: "Class code must be 100 characters or fewer." } as const;
+  }
+  return {
+    values: {
+      class_name: className,
+      class_code: classCode,
+      instructor: optional(formData.get("instructor")),
+      semester: optional(formData.get("semester")),
+    },
+  } as const;
+}
+
 export async function addClass(
   _prev: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  const className = String(formData.get("className") ?? "").trim();
-  const classCode = String(formData.get("classCode") ?? "").trim();
-  if (!className || !classCode) {
-    return { error: "Class name and class code are required." };
-  }
-  if (className.length > 100) {
-  return { error: "Class name must be 100 characters or fewer." };
-  }
-  if (classCode.length > 100) {
-    return { error: "Class code must be 100 characters or fewer." };
-  }
+  const parsed = readClass(formData);
+  if ("error" in parsed) return { error: parsed.error };
 
   const user = await getCurrentUser();
-  const { error } = await supabase.from("classes").insert({
-    user_id: user.id,
-    class_name: className,
-    class_code: classCode,
-    instructor: optional(formData.get("instructor")),
-    semester: optional(formData.get("semester")),
-  });
+  const { error } = await supabase
+    .from("classes")
+    .insert({ ...parsed.values, user_id: user.id });
   if (error) return { error: error.message };
 
   updateTag(tag("classes", user.id));
   return { ok: true };
 }
 
-function isId(value: number) {
-  return Number.isInteger(value) && value > 0;
+export async function updateClass(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const classId = Number(formData.get("classId"));
+  if (!isId(classId)) return { error: "Missing class." };
+
+  const parsed = readClass(formData);
+  if ("error" in parsed) return { error: parsed.error };
+
+  const user = await getCurrentUser();
+  const { data, error } = await supabase
+    .from("classes")
+    .update(parsed.values)
+    .eq("class_id", classId)
+    .eq("user_id", user.id)
+    .select("class_id");
+  if (error) return { error: error.message };
+  if (data.length === 0) {
+    return { error: "This class no longer exists. Try refreshing." };
+  }
+
+  // Assignments show their class's name and code, so refresh them too.
+  updateTag(tag("classes", user.id));
+  updateTag(tag("assignments", user.id));
+  return { ok: true };
+}
+
+// Removes the class along with its assignments and their steps. Children go
+// first because they reference the class.
+export async function deleteClass(classId: number): Promise<FormState> {
+  if (!isId(classId)) return { error: "Missing class." };
+  const user = await getCurrentUser();
+  if (!(await ownsClass(user.id, classId))) {
+    return { error: "This class no longer exists. Try refreshing." };
+  }
+
+  const { data: assignments, error: listError } = await supabase
+    .from("assignments")
+    .select("assignment_id")
+    .eq("class_id", classId)
+    .eq("user_id", user.id);
+  if (listError) return { error: listError.message };
+  const assignmentIds = assignments.map((a) => a.assignment_id);
+
+  try {
+    // Tasks for this class, plus any step whose assignment is in it.
+    const { error: taskError } = await supabase
+      .from("tasks")
+      .delete()
+      .eq("class_id", classId)
+      .eq("user_id", user.id);
+    if (taskError) return { error: taskError.message };
+    if (assignmentIds.length > 0) {
+      const { error: stepError } = await supabase
+        .from("tasks")
+        .delete()
+        .in("assignment_id", assignmentIds)
+        .eq("user_id", user.id);
+      if (stepError) return { error: stepError.message };
+
+      const { error: assignmentError } = await supabase
+        .from("assignments")
+        .delete()
+        .eq("class_id", classId)
+        .eq("user_id", user.id);
+      if (assignmentError) return { error: assignmentError.message };
+    }
+
+    const { error } = await supabase
+      .from("classes")
+      .delete()
+      .eq("class_id", classId)
+      .eq("user_id", user.id);
+    if (error) return { error: error.message };
+  } finally {
+    updateTag(tag("tasks", user.id));
+    updateTag(tag("assignments", user.id));
+    updateTag(tag("classes", user.id));
+  }
+
+  return { ok: true };
 }
 
 // Shared by add and edit so both forms follow the same rules.
