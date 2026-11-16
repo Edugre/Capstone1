@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import AddClassForm from "@/components/add-class-form";
-import { AlertIcon, ArrowIcon, PlusIcon } from "@/components/icons";
+import WeeklyClassCalendar from "@/components/weekly-class-calendar";
+import { AlertIcon, ArrowIcon, BookIcon, PlusIcon } from "@/components/icons";
 import ScrollToHash from "@/components/scroll-to-hash";
 import ProgressRing from "@/components/progress-ring";
 import { getTracker, type ClassItem } from "@/lib/data";
@@ -71,6 +72,7 @@ async function Classes() {
           <AddClassForm defaultSemester={semesters.at(-1)} />
         </aside>
       </div>
+      <WeeklyClassCalendar classes={classes} />
     </>
   );
 }
