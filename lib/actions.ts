@@ -17,8 +17,38 @@ export async function addClass(
 ): Promise<FormState> {
   const className = String(formData.get("className") ?? "").trim();
   const classCode = String(formData.get("classCode") ?? "").trim();
+
   if (!className || !classCode) {
     return { error: "Class name and class code are required." };
+  }
+
+  const meetingDays = formData.getAll("meetingDays").map(String);
+  const startTime = optional(formData.get("startTime"));
+  const endTime = optional(formData.get("endTime"));
+
+  const validDays = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+  if (meetingDays.some((day) => !validDays.includes(day))) {
+    return { error: "Please select valid meeting days." };
+  }
+
+  if (meetingDays.length > 0 || startTime || endTime) {
+    if (!meetingDays.length || !startTime || !endTime) {
+      return {
+        error: "Please select meeting days, a start time, and an end time.",
+      };
+    }
+
+    if (
+      !/^([01]\d|2[0-3]):[0-5]\d$/.test(startTime) ||
+      !/^([01]\d|2[0-3]):[0-5]\d$/.test(endTime)
+    ) {
+      return { error: "Please enter valid meeting times." };
+    }
+
+    if (startTime >= endTime) {
+      return { error: "End time must be after start time." };
+    }
   }
 
   const { error } = await supabase.from("classes").insert({
@@ -26,7 +56,11 @@ export async function addClass(
     class_code: classCode,
     instructor: optional(formData.get("instructor")),
     semester: optional(formData.get("semester")),
+    meeting_days: meetingDays.length ? meetingDays : null,
+    start_time: startTime,
+    end_time: endTime,
   });
+
   if (error) return { error: error.message };
 
   updateTag("classes");

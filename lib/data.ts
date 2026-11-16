@@ -16,6 +16,9 @@ type ClassRow = {
   class_code: string;
   instructor: string | null;
   semester: string | null;
+  meeting_days: string[] | null;
+  start_time: string | null;
+  end_time: string | null;
 };
 
 type AssignmentRow = {
@@ -41,7 +44,7 @@ async function getClassRows(): Promise<ClassRow[]> {
 
   const { data, error } = await supabase
     .from("classes")
-    .select("class_id, class_name, class_code, instructor, semester")
+    .select("class_id, class_name, class_code, instructor, semester, meeting_days, start_time, end_time")
     .order("class_id");
 
   if (error) throw new Error(`Failed to load classes: ${error.message}`);
