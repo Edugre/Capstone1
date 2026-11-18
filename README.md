@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Student Tracker
 
-## Getting Started
+Track your classes and assignments in one place: see what is due this week, break an assignment into steps, and check them off as you go.
 
-First, run the development server:
+## Getting started
+
+Create a `.env` file with your Supabase project URL and keys, then run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Built with
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Piece | Source | License | Used for |
+|---|---|---|---|
+| [Next.js](https://nextjs.org) | npm | MIT | App framework, routing, server actions |
+| [React](https://react.dev) | npm | MIT | UI components |
+| [Supabase JS](https://github.com/supabase/supabase-js) and [Supabase SSR](https://github.com/supabase/ssr) | npm | MIT | Database access and login sessions |
+| [Supabase](https://supabase.com) | Hosted service | Supabase Terms of Service | Database and user accounts |
+| [Vercel](https://vercel.com) | Hosted service | Vercel Terms of Service | Hosting and deployments |
+| [Tailwind CSS](https://tailwindcss.com) | npm | MIT | Styling |
+| [Nunito](https://fonts.google.com/specimen/Nunito) | Google Fonts | SIL Open Font License 1.1 | Typeface |
+| [TypeScript](https://www.typescriptlang.org), [ESLint](https://eslint.org) | npm | Apache-2.0, MIT | Type checking and linting |
 
-## Learn More
+The build also uses browser-support data from [caniuse-lite](https://github.com/browserslist/caniuse-lite) (CC BY 4.0, data by [caniuse.com](https://caniuse.com)). Next.js's image optimizer uses [sharp](https://sharp.pixelplumbing.com) and libvips (LGPL-3.0), unmodified.
 
-To learn more about Next.js, take a look at the following resources:
+Everything else (the pages, components, icons and database migration) was written by our team.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## AI use
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+We used AI tools while building this project:
 
-## Deploy on Vercel
+- **Claude Code** (Anthropic): writing and debugging code, including the Supabase data layer, assignment steps, and login; drafting commit messages and pull request descriptions. Commits it helped with carry a `Co-Authored-By: Claude` line.
+- **Hallmark** (a design skill run inside Claude Code): a design and accessibility review of the app screens, such as focus rings and contrast.
+- **GitHub Copilot**: code suggestions in the editor.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+A team member reviewed every AI-assisted change before it was merged, and we rejected suggestions that conflicted with teammates' work or didn't match our deployment.
