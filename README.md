@@ -37,5 +37,6 @@ We used AI tools while building this project:
 - **Claude Code** (Anthropic): writing and debugging code, including the Supabase data layer, assignment steps, and login; drafting commit messages and pull request descriptions. Commits it helped with carry a `Co-Authored-By: Claude` line.
 - **Hallmark** (a design skill run inside Claude Code): a design and accessibility review of the app screens, such as focus rings and contrast.
 - **GitHub Copilot**: code suggestions in the editor.
+- **ChatGPT** (OpenAI): answering questions and helping with code while building features.
 
 A team member reviewed every AI-assisted change before it was merged, and we rejected suggestions that conflicted with teammates' work or didn't match our deployment.
